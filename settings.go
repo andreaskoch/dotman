@@ -7,10 +7,13 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 const (
+	dotmanFileName = "dotman"
+
 	helpAction   = "help"
 	backupAction = "backup"
 	importAction = "import"
@@ -41,23 +44,31 @@ func (action Action) String() string {
 }
 
 type CommandlineArguments struct {
-	Path   string
-	Action Action
+	WorkingDirectory string
+	Action           Action
+	Map              PathMap
 }
 
 func init() {
 
-	// use the current directory as the default path
-	defaultPath, err := os.Getwd()
+	// determine working directory
+	workingDirectory, err := os.Getwd()
 	if err != nil {
-		defaultPath = "."
+		panic(fmt.Sprintf("Cannot determine working directory. %s", err))
 	}
-	settings.Path = defaultPath
+	settings.WorkingDirectory = workingDirectory
 
-	// find the action name
+	// load path map
+	dotmanFilePath := filepath.Join(workingDirectory, dotmanFileName)
+	if settings.Map, err = NewPathMap(dotmanFilePath); err != nil {
+		panic(fmt.Sprintf("Unable to read dotman file. %s", err))
+	}
+
+	// parse command line arguments
 	if len(os.Args) > 1 {
 		settings.Action = newAction(os.Args[1], os.Args[1:])
 	}
+
 }
 
 var usage = func() {
