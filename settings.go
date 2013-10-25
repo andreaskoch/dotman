@@ -68,6 +68,8 @@ func init() {
 			settings.Map = pathMap
 		}
 
+		fmt.Printf("%#v", settings.Map)
+
 	}
 
 	// parse command line arguments

@@ -108,59 +108,50 @@ func DirectoryExists(path string) bool {
 	return file.IsDir()
 }
 
-func IsFile(path string) (bool, error) {
+func IsFile(path string) bool {
 
 	fileInfo, err := os.Stat(path)
 	if err != nil {
-		return false, err
+		return false
 	}
 
-	return fileInfo.IsDir() == false, nil
+	return fileInfo.IsDir() == false
 }
 
-func IsDirectory(path string) (bool, error) {
+func IsDirectory(path string) bool {
 
 	fileInfo, err := os.Stat(path)
 	if err != nil {
-		return false, err
+		return false
 	}
 
-	return fileInfo.IsDir(), nil
+	return fileInfo.IsDir()
 }
 
-// Gets the current working directory in which this application is being executed.
-func GetWorkingDirectory() string {
-	workingDirectory, err := os.Getwd()
-	if err != nil {
-		return "."
-	}
+func GetAllFiles(path string) []string {
 
-	return workingDirectory
-}
+	files := make([]string, 0)
 
-func GetSubDirectories(path string) []string {
-
-	directories := make([]string, 0)
-
-	if ok, _ := IsDirectory(path); !ok {
-		fmt.Errorf("%q is not a directory.\n", path)
-		return directories
+	if !IsDirectory(path) {
+		return files
 	}
 
 	directoryEntries, err := ioutil.ReadDir(path)
 	if err != nil {
-		fmt.Errorf("Cannot read directory %q.\n", path)
-		return directories
+		return files
 	}
 
 	for _, entry := range directoryEntries {
-		if !entry.IsDir() {
-			continue // skip files
+
+		entryPath := filepath.Join(path, entry.Name())
+
+		// recurse
+		if entry.IsDir() {
+			files = append(files, GetAllFiles(entryPath)...)
 		}
 
-		subDirectory := filepath.Join(path, entry.Name())
-		directories = append(directories, subDirectory)
+		files = append(files, entryPath)
 	}
 
-	return directories
+	return files
 }
