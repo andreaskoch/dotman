@@ -30,12 +30,12 @@ type SourcePath struct {
 type TargetPath struct {
 }
 
-func NewPathMap(sourceFile string) (PathMap, error) {
+func NewPathMap(sourceFile string) (*PathMap, error) {
 
 	// open the dotman file
 	file, err := os.Open(sourceFile)
 	if err != nil {
-		return PathMap{}, err
+		return nil, err
 	}
 
 	// read in the lines of the dotman file and create path map entries from it
@@ -59,7 +59,9 @@ func NewPathMap(sourceFile string) (PathMap, error) {
 		pathMapEntries = append(pathMapEntries, pathMapEntry)
 	}
 
-	return PathMap{}, nil
+	return &PathMap{
+		Paths: pathMapEntries,
+	}, nil
 }
 
 func newPathMapEntry(dotmanPathMapEntry string) (PathMapEntry, error) {

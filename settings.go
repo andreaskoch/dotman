@@ -46,7 +46,7 @@ func (action Action) String() string {
 type CommandlineArguments struct {
 	WorkingDirectory string
 	Action           Action
-	Map              PathMap
+	Map              *PathMap
 }
 
 func init() {
@@ -60,8 +60,14 @@ func init() {
 
 	// load path map
 	dotmanFilePath := filepath.Join(workingDirectory, dotmanFileName)
-	if settings.Map, err = NewPathMap(dotmanFilePath); err != nil {
-		panic(fmt.Sprintf("Unable to read dotman file. %s", err))
+	if FileExists(dotmanFilePath) {
+
+		if pathMap, err := NewPathMap(dotmanFilePath); err != nil {
+			message("Unable to read dotman file. %s", err)
+		} else {
+			settings.Map = pathMap
+		}
+
 	}
 
 	// parse command line arguments
