@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package ui
 
 import (
 	"fmt"
 	"strings"
 )
 
-func message(text string, args ...interface{}) {
+func Message(text string, args ...interface{}) {
 
 	// append newline character
 	if !strings.HasSuffix(text, "\n") {

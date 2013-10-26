@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package fs
 
 import (
 	"bufio"
@@ -157,7 +157,7 @@ func GetAllFiles(path string) []string {
 	return files
 }
 
-func getUserHomeDirectory() (string, error) {
+func GetUserHomeDirectory() (string, error) {
 
 	usr, err := user.Current()
 	if err != nil {

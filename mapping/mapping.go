@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package mapping
 
 import (
 	"fmt"
+	"github.com/andreaskoch/dotman/ui"
+	"github.com/andreaskoch/dotman/util/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -73,7 +75,7 @@ func (targetPath *TargetPath) String() string {
 func NewPathMap(sourceFile string) (*PathMap, error) {
 
 	// check if the source file exists
-	if !IsFile(sourceFile) {
+	if !fs.IsFile(sourceFile) {
 		return nil, fmt.Errorf("Cannot create a path map because the specified dotfile %q does not exist", sourceFile)
 	}
 
@@ -88,7 +90,7 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 
 	// read in the lines of the dotman file and create path map entries from it
 	pathMapEntries := make([]PathMapEntry, 0)
-	lines := GetLines(file)
+	lines := fs.GetLines(file)
 	for lineNumber, line := range lines {
 
 		// ignore white space and comments
@@ -99,7 +101,7 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 		// create a path map entry from the line
 		pathMapEntry, err := newPathMapEntry(directory, line)
 		if err != nil {
-			message("Line %d: %s", lineNumber+1, err)
+			ui.Message("Line %d: %s", lineNumber+1, err)
 			continue
 		}
 
@@ -144,7 +146,7 @@ func newPathMapEntry(baseDirectory, dotmanPathMapEntry string) (PathMapEntry, er
 func newSourcePath(baseDirectory, specification string) (*SourcePath, error) {
 
 	// check if the base directory exists
-	if !IsDirectory(baseDirectory) {
+	if !fs.IsDirectory(baseDirectory) {
 		return nil, fmt.Errorf("The specified base directory %q does not exists.", baseDirectory)
 	}
 
@@ -163,18 +165,18 @@ func newSourcePath(baseDirectory, specification string) (*SourcePath, error) {
 		wildcardBasePath := filepath.Join(baseDirectory, wildcardBaseDirectory)
 
 		// check if the base path is an existing directory
-		if !IsDirectory(wildcardBasePath) {
+		if !fs.IsDirectory(wildcardBasePath) {
 			return nil, fmt.Errorf("%q does not exist.", wildcardBasePath)
 		}
 
 		return &SourcePath{
-			Files: GetAllFiles(wildcardBaseDirectory),
+			Files: fs.GetAllFiles(wildcardBaseDirectory),
 		}, nil
 	}
 
 	// check if the specified file or directory exists
 	fullPath := filepath.Join(baseDirectory, specification)
-	if PathExists(fullPath) {
+	if fs.PathExists(fullPath) {
 		return &SourcePath{
 			Files: []string{fullPath},
 		}, nil
@@ -203,7 +205,7 @@ func newTargetPath(targetPath string) (*TargetPath, error) {
 	}
 
 	// check if the specified file or directory exists
-	if PathExists(targetPath) {
+	if fs.PathExists(targetPath) {
 		return &TargetPath{
 			Path: targetPath,
 		}, nil
@@ -249,7 +251,7 @@ func normalizePathSpecification(path string) string {
 func expandPathVariables(path string) string {
 
 	// replace ~/ with the real home directory path
-	if homeDirectory, err := getUserHomeDirectory(); err == nil {
+	if homeDirectory, err := fs.GetUserHomeDirectory(); err == nil {
 		path = HomeDirectoryBashPattern.ReplaceAllString(path, homeDirectory)
 	}
 

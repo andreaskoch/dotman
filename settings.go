@@ -6,6 +6,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/andreaskoch/dotman/mapping"
+	"github.com/andreaskoch/dotman/ui"
+	"github.com/andreaskoch/dotman/util/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -46,7 +49,7 @@ func (action Action) String() string {
 type CommandlineArguments struct {
 	WorkingDirectory string
 	Action           Action
-	Map              *PathMap
+	Map              *mapping.PathMap
 }
 
 func init() {
@@ -60,10 +63,10 @@ func init() {
 
 	// load path map
 	dotmanFilePath := filepath.Join(workingDirectory, dotmanFileName)
-	if FileExists(dotmanFilePath) {
+	if fs.FileExists(dotmanFilePath) {
 
-		if pathMap, err := NewPathMap(dotmanFilePath); err != nil {
-			message("Unable to read dotman file. %s", err)
+		if pathMap, err := mapping.NewPathMap(dotmanFilePath); err != nil {
+			ui.Message("Unable to read dotman file. %s", err)
 		} else {
 			settings.Map = pathMap
 		}
@@ -81,20 +84,20 @@ func init() {
 
 var usage = func() {
 	// description
-	message("Backup and bootstrap your dotfiles and system configuration.")
-	message("")
+	ui.Message("Backup and bootstrap your dotfiles and system configuration.")
+	ui.Message("")
 
 	// usage
-	message("usage: %s <command> [args]", os.Args[0])
-	message("")
+	ui.Message("usage: %s <command> [args]", os.Args[0])
+	ui.Message("")
 
 	// commands
-	message("Available commands are:")
-	message("    %s %s  %s", helpAction, getActionSpacer(helpAction), "Prints this help text. Add <command> to get specific help.")
-	message("    %s %s  %s", deployAction, getActionSpacer(deployAction), "Deploy all configuration files")
-	message("    %s %s  %s", backupAction, getActionSpacer(backupAction), "Backup your current configuration")
-	message("    %s %s  %s", importAction, getActionSpacer(importAction), "Import your current configuration files")
-	message("    %s %s  %s", updateAction, getActionSpacer(updateAction), "Pull the latest changes from your remote")
+	ui.Message("Available commands are:")
+	ui.Message("    %s %s  %s", helpAction, getActionSpacer(helpAction), "Prints this help text. Add <command> to get specific help.")
+	ui.Message("    %s %s  %s", deployAction, getActionSpacer(deployAction), "Deploy all configuration files")
+	ui.Message("    %s %s  %s", backupAction, getActionSpacer(backupAction), "Backup your current configuration")
+	ui.Message("    %s %s  %s", importAction, getActionSpacer(importAction), "Import your current configuration files")
+	ui.Message("    %s %s  %s", updateAction, getActionSpacer(updateAction), "Pull the latest changes from your remote")
 }
 
 func getActionSpacer(action string) string {
