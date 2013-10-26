@@ -29,17 +29,45 @@ type PathMap struct {
 	Paths     []PathMapEntry
 }
 
+func (pathMap *PathMap) String() string {
+	text := ""
+
+	for _, entry := range pathMap.Paths {
+		text += fmt.Sprintf("%s", entry.String())
+	}
+
+	return text
+}
+
 type PathMapEntry struct {
 	Source *SourcePath
 	Target *TargetPath
+}
+
+func (pathMapEntry *PathMapEntry) String() string {
+	text := ""
+
+	for _, source := range pathMapEntry.Source.Files {
+		text += fmt.Sprintf("%s → %s\n", source, pathMapEntry.Target.Path)
+	}
+
+	return text
 }
 
 type SourcePath struct {
 	Files []string
 }
 
+func (sourcePath *SourcePath) String() string {
+	return strings.Join(sourcePath.Files, ", ")
+}
+
 type TargetPath struct {
 	Path string
+}
+
+func (targetPath *TargetPath) String() string {
+	return targetPath.Path
 }
 
 func NewPathMap(sourceFile string) (*PathMap, error) {

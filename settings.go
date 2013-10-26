@@ -68,7 +68,7 @@ func init() {
 			settings.Map = pathMap
 		}
 
-		fmt.Printf("%#v", settings.Map)
+		fmt.Printf("%s", settings.Map)
 
 	}
 
