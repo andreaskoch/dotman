@@ -16,6 +16,12 @@ var (
 	PathMapEntryPattern = regexp.MustCompile(`^(\S.+)\s{2,}(\S.+)$`)
 
 	DirectorySeparatorPattern = regexp.MustCompile(`[\/]{1,}`)
+
+	HomeDirectoryBashPattern = regexp.MustCompile(`^~`)
+
+	UnixEnvironmentVariablePattern = regexp.MustCompile(`\$(\w+)`)
+
+	WindowsEnvironmentVariablePattern = regexp.MustCompile(`%(\w+)%`)
 )
 
 type PathMap struct {
@@ -33,7 +39,7 @@ type SourcePath struct {
 }
 
 type TargetPath struct {
-	Files []string
+	Path string
 }
 
 func NewPathMap(sourceFile string) (*PathMap, error) {
@@ -150,6 +156,35 @@ func newSourcePath(baseDirectory, specification string) (*SourcePath, error) {
 	return nil, fmt.Errorf("%q does not exist.", specification)
 }
 
+func newTargetPath(targetPath string) (*TargetPath, error) {
+
+	// validate the source path specification
+	if strings.TrimSpace(targetPath) == "" {
+		return nil, fmt.Errorf("Empty specification.")
+	}
+
+	// normalize the path specification
+	targetPath = normalizePathSpecification(targetPath)
+
+	// expand path variables such as ~/ or $HOME
+	targetPath = expandPathVariables(targetPath)
+
+	// abort if the path is not absolute
+	if !filepath.IsAbs(targetPath) {
+		return nil, fmt.Errorf("Target path is not absolute.")
+	}
+
+	// check if the specified file or directory exists
+	if PathExists(targetPath) {
+		return &TargetPath{
+			Path: targetPath,
+		}, nil
+	}
+
+	// the specification is invalid
+	return nil, fmt.Errorf("%q does not exist.", targetPath)
+}
+
 func isWildcardSpecification(path string) (isWildcard bool, wildcardBaseDirectory string) {
 
 	// split the path into its components
@@ -177,11 +212,42 @@ func normalizePathSpecification(path string) string {
 	// replace all directory separators with the ones for the current platform
 	path = DirectorySeparatorPattern.ReplaceAllString(path, string(os.PathSeparator))
 
+	// trim trailing path separators
+	path = strings.TrimSuffix(path, string(os.PathSeparator))
+
 	return path
 }
 
-func newTargetPath(targetPathText string) (*TargetPath, error) {
-	return &TargetPath{}, nil
+func expandPathVariables(path string) string {
+
+	// replace ~/ with the real home directory path
+	if homeDirectory, err := getUserHomeDirectory(); err == nil {
+		path = HomeDirectoryBashPattern.ReplaceAllString(path, homeDirectory)
+	}
+
+	// replace environment variables
+	path = replaceEnvironmentVariables(path, UnixEnvironmentVariablePattern)
+	path = replaceEnvironmentVariables(path, WindowsEnvironmentVariablePattern)
+
+	return path
+}
+
+func replaceEnvironmentVariables(path string, environmentVariablePattern *regexp.Regexp) string {
+
+	matches := environmentVariablePattern.FindAllStringSubmatch(path, -1)
+	for _, submatch := range matches {
+		if len(submatch) < 2 {
+			continue
+		}
+
+		fullmatch := submatch[0]
+		variableName := strings.TrimSpace(submatch[1])
+		value := os.Getenv(variableName)
+
+		path = strings.Replace(path, fullmatch, value, 1)
+	}
+
+	return path
 }
 
 func isEmptyLine(line string) bool {

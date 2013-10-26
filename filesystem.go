@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 )
@@ -154,4 +155,14 @@ func GetAllFiles(path string) []string {
 	}
 
 	return files
+}
+
+func getUserHomeDirectory() (string, error) {
+
+	usr, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Clean(usr.HomeDir), nil
 }
