@@ -12,8 +12,10 @@ import (
 )
 
 type Project struct {
-	Directory string
-	Map       *mapping.PathMap
+	Map *mapping.PathMap
+
+	name      string
+	directory string
 }
 
 func newProject(directory, projectFileName string) (*Project, error) {
@@ -32,7 +34,12 @@ func newProject(directory, projectFileName string) (*Project, error) {
 	}
 
 	return &Project{
-		Directory: directory,
 		Map:       projectPathMap,
+		name:      filepath.Base(directory),
+		directory: directory,
 	}, nil
+}
+
+func (project *Project) String() string {
+	return project.name
 }

@@ -10,25 +10,24 @@ import (
 	"strings"
 )
 
+const (
+	ProjectFileName = "dotman"
+)
+
 type Collection struct {
 	BaseDirectory string
 	Collection    []*Project
 }
 
-func Load(directory, projectFileName string) (*Collection, error) {
+func Load(directory string) (*Collection, error) {
 
 	// check if the directory exists
 	if !fs.DirectoryExists(directory) {
 		return nil, fmt.Errorf("The directory %q does not exist.", directory)
 	}
 
-	// validate the mapping file name
-	if strings.TrimSpace(projectFileName) == "" {
-		return nil, fmt.Errorf("The project file name cannot be empty.")
-	}
-
 	// find all folders with project files in them (non-recursive)
-	projectDirectories, err := getAllProjectDirectories(directory, projectFileName)
+	projectDirectories, err := getAllProjectDirectories(directory, ProjectFileName)
 	if err != nil {
 		return nil, fmt.Errorf("Unable scan the directory %q for projects. Error: %s", directory, err)
 	}
@@ -38,7 +37,7 @@ func Load(directory, projectFileName string) (*Collection, error) {
 	errors := make([]string, 0)
 	for _, projectDirectory := range projectDirectories {
 
-		project, err := newProject(projectDirectory, projectFileName)
+		project, err := newProject(projectDirectory, ProjectFileName)
 		if err != nil {
 			errors = append(errors, err.Error())
 			continue
