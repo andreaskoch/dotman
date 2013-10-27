@@ -5,11 +5,10 @@
 package main
 
 import (
-	"fmt"
+	"github.com/andreaskoch/dotman/action"
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
 	"os"
-	"strings"
 )
 
 const (
@@ -29,25 +28,9 @@ var (
 	settings Settings = Settings{}
 )
 
-type Action struct {
-	Name      string
-	Arguments []string
-}
-
-func newAction(name string, arguments []string) Action {
-	return Action{
-		Name:      strings.TrimSpace(strings.ToLower(name)),
-		Arguments: arguments,
-	}
-}
-
-func (action Action) String() string {
-	return fmt.Sprintf("%s", action.Name)
-}
-
 type Settings struct {
 	WorkingDirectory string
-	Action           Action
+	Action           action.Action
 	Projects         *projects.Collection
 }
 
@@ -71,7 +54,7 @@ func init() {
 
 	// parse command line arguments
 	if len(os.Args) > 1 {
-		settings.Action = newAction(os.Args[1], os.Args[1:])
+		settings.Action = action.New(os.Args[1], os.Args[1:])
 	}
 
 }

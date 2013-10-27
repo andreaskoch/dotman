@@ -13,6 +13,8 @@ const (
 func main() {
 
 	switch settings.Action.String() {
+	case listProjectsAction:
+
 	case deployAction:
 		// deploy
 	case updateAction:
