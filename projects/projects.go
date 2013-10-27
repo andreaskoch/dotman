@@ -6,10 +6,7 @@ package projects
 
 import (
 	"fmt"
-	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
-	"io/ioutil"
-	"path/filepath"
 	"strings"
 )
 
@@ -30,10 +27,15 @@ func Load(directory, projectFileName string) (*Collection, error) {
 		return nil, fmt.Errorf("The project file name cannot be empty.")
 	}
 
-	// scan for projects in the specified directory
+	// find all folders with project files in them (non-recursive)
+	projectDirectories, err := getAllProjectDirectories(directory, projectFileName)
+	if err != nil {
+		return nil, fmt.Errorf("Unable scan the directory %q for projects. Error: %s", directory, err)
+	}
+
+	// try to create projects from each project directory
 	projects := make([]*Project, 0)
 	errors := make([]string, 0)
-	projectDirectories := getAllProjectDirectories(directory, projectFileName)
 	for _, projectDirectory := range projectDirectories {
 
 		project, err := newProject(projectDirectory, projectFileName)
@@ -45,7 +47,7 @@ func Load(directory, projectFileName string) (*Collection, error) {
 		projects = append(projects, project)
 	}
 
-	// create the collection
+	// create the project collection
 	collection := &Collection{
 		BaseDirectory: directory,
 		Collection:    projects,
@@ -58,41 +60,4 @@ func Load(directory, projectFileName string) (*Collection, error) {
 
 	// success
 	return collection, nil
-}
-
-func getAllProjectDirectories(baseDirectory, projectFileName string) []string {
-
-	// abort if the supplied directory is not a directory or does not exist
-	if !fs.IsDirectory(baseDirectory) {
-		ui.Fatal("%q is not a directory.", baseDirectory)
-	}
-
-	baseDirectoryEntries, err := ioutil.ReadDir(baseDirectory)
-	if err != nil {
-		ui.Fatal("Cannot read directory %q.", baseDirectory)
-	}
-
-	// get al list of all directories (including the base directory)
-	projectDirectories := make([]string, 0)
-	for _, entry := range baseDirectoryEntries {
-
-		// check the directory
-		if entry.IsDir() {
-			subDirectoryPath := filepath.Join(baseDirectory, entry.Name())
-			projectFilePath := filepath.Join(subDirectoryPath, projectFileName)
-
-			// add the directory if it contains a project file
-			if fs.FileExists(projectFilePath) {
-				projectDirectories = append(projectDirectories, subDirectoryPath)
-			}
-		}
-
-		// add the base directory if it contains a projct file
-		if entry.Name() == projectFileName {
-			projectDirectories = append(projectDirectories, baseDirectory)
-		}
-
-	}
-
-	return projectDirectories
 }
