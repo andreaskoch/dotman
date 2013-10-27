@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -170,7 +171,7 @@ func newSourcePath(baseDirectory, specification string) (*SourcePath, error) {
 		}
 
 		return &SourcePath{
-			Files: fs.GetAllFiles(wildcardBaseDirectory),
+			Files: getAllFilesInDirectory(wildcardBaseDirectory),
 		}, nil
 	}
 
@@ -286,4 +287,32 @@ func isEmptyLine(line string) bool {
 
 func isComment(line string) bool {
 	return strings.HasPrefix(strings.TrimSpace(line), "#")
+}
+
+func getAllFilesInDirectory(path string) []string {
+
+	files := make([]string, 0)
+
+	if !fs.IsDirectory(path) {
+		return files
+	}
+
+	directoryEntries, err := ioutil.ReadDir(path)
+	if err != nil {
+		return files
+	}
+
+	for _, entry := range directoryEntries {
+
+		entryPath := filepath.Join(path, entry.Name())
+
+		// recurse
+		if entry.IsDir() {
+			files = append(files, getAllFilesInDirectory(entryPath)...)
+		}
+
+		files = append(files, entryPath)
+	}
+
+	return files
 }

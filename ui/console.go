@@ -6,6 +6,7 @@ package ui
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -17,4 +18,9 @@ func Message(text string, args ...interface{}) {
 	}
 
 	fmt.Printf(text, args...)
+}
+
+func Fatal(text string, args ...interface{}) {
+	Message(text, args)
+	os.Exit(2)
 }

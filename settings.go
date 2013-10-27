@@ -6,28 +6,27 @@ package main
 
 import (
 	"fmt"
-	"github.com/andreaskoch/dotman/mapping"
+	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
-	"github.com/andreaskoch/dotman/util/fs"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
 const (
 	dotmanFileName = "dotman"
 
-	helpAction   = "help"
-	backupAction = "backup"
-	importAction = "import"
-	deployAction = "deploy"
-	updateAction = "update"
+	helpAction         = "help"
+	backupAction       = "backup"
+	importAction       = "import"
+	deployAction       = "deploy"
+	updateAction       = "update"
+	listProjectsAction = "list"
 )
 
 var (
-	availableActions = []string{helpAction, backupAction, importAction, deployAction, updateAction}
+	availableActions = []string{helpAction, listProjectsAction, backupAction, importAction, deployAction, updateAction}
 
-	settings CommandlineArguments = CommandlineArguments{}
+	settings Settings = Settings{}
 )
 
 type Action struct {
@@ -46,10 +45,10 @@ func (action Action) String() string {
 	return fmt.Sprintf("%s", action.Name)
 }
 
-type CommandlineArguments struct {
+type Settings struct {
 	WorkingDirectory string
 	Action           Action
-	Map              *mapping.PathMap
+	Projects         *projects.Collection
 }
 
 func init() {
@@ -57,23 +56,18 @@ func init() {
 	// determine working directory
 	workingDirectory, err := os.Getwd()
 	if err != nil {
-		panic(fmt.Sprintf("Cannot determine working directory. %s", err))
+		ui.Fatal("Cannot determine working directory. %s", err)
 	}
+
 	settings.WorkingDirectory = workingDirectory
 
-	// load path map
-	dotmanFilePath := filepath.Join(workingDirectory, dotmanFileName)
-	if fs.FileExists(dotmanFilePath) {
-
-		if pathMap, err := mapping.NewPathMap(dotmanFilePath); err != nil {
-			ui.Message("Unable to read dotman file. %s", err)
-		} else {
-			settings.Map = pathMap
-		}
-
-		fmt.Printf("%s", settings.Map)
-
+	// load the projects
+	projectCollection, err := projects.Load(workingDirectory, dotmanFileName)
+	if err != nil {
+		ui.Fatal("Unable to scan for projects. %s", err)
 	}
+
+	settings.Projects = projectCollection
 
 	// parse command line arguments
 	if len(os.Args) > 1 {
@@ -94,6 +88,7 @@ var usage = func() {
 	// commands
 	ui.Message("Available commands are:")
 	ui.Message("    %s %s  %s", helpAction, getActionSpacer(helpAction), "Prints this help text. Add <command> to get specific help.")
+	ui.Message("    %s %s  %s", listProjectsAction, getActionSpacer(listProjectsAction), "Get a list of all projects.")
 	ui.Message("    %s %s  %s", deployAction, getActionSpacer(deployAction), "Deploy all configuration files")
 	ui.Message("    %s %s  %s", backupAction, getActionSpacer(backupAction), "Backup your current configuration")
 	ui.Message("    %s %s  %s", importAction, getActionSpacer(importAction), "Import your current configuration files")

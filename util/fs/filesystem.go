@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -127,34 +126,6 @@ func IsDirectory(path string) bool {
 	}
 
 	return fileInfo.IsDir()
-}
-
-func GetAllFiles(path string) []string {
-
-	files := make([]string, 0)
-
-	if !IsDirectory(path) {
-		return files
-	}
-
-	directoryEntries, err := ioutil.ReadDir(path)
-	if err != nil {
-		return files
-	}
-
-	for _, entry := range directoryEntries {
-
-		entryPath := filepath.Join(path, entry.Name())
-
-		// recurse
-		if entry.IsDir() {
-			files = append(files, GetAllFiles(entryPath)...)
-		}
-
-		files = append(files, entryPath)
-	}
-
-	return files
 }
 
 func GetUserHomeDirectory() (string, error) {
