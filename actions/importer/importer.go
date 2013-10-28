@@ -34,21 +34,31 @@ func (importer *Importer) Description() string {
 }
 
 func (importer *Importer) Execute() {
+	importer.execute(false)
+}
+
+func (importer *Importer) DryRun() {
+	importer.execute(true)
+}
+
+func (importer *Importer) execute(executeADryRunOnly bool) {
+
 	projects := importer.projectCollectionProvider()
 	for _, project := range projects.Collection {
 		ui.Message("Importing %q", project)
-		importProject(project)
+		importProject(project, executeADryRunOnly)
 	}
+
 }
 
-func importProject(project *projects.Project) {
+func importProject(project *projects.Project, executeADryRunOnly bool) {
 
 	for _, entry := range project.Map.Entries {
 		sourceFile := entry.Target.String()
 		targetFile := entry.Source.String()
 
-		ui.Message("Copy %q to %q.", sourceFile, targetFile)
-		if true {
+		ui.Message("Copy: %s → %s", sourceFile, targetFile)
+		if !executeADryRunOnly {
 			if _, err := fs.Copy(sourceFile, targetFile); err != nil {
 				ui.Message("%s", err)
 			}

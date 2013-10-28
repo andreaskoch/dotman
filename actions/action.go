@@ -12,6 +12,7 @@ type ActionMetaData interface {
 type Action interface {
 	Name() string
 	Description() string
+	DryRun()
 	Execute()
 }
 

@@ -33,6 +33,14 @@ func (list *List) Description() string {
 }
 
 func (list *List) Execute() {
+	list.execute()
+}
+
+func (list *List) DryRun() {
+	list.execute()
+}
+
+func (list *List) execute() {
 	projects := list.projectCollectionProvider()
 
 	for _, project := range projects.Collection {

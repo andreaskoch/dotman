@@ -6,9 +6,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/andreaskoch/dotman/actions"
 	"github.com/andreaskoch/dotman/ui"
 	"os"
+	"strings"
 )
 
 const (
@@ -42,18 +44,46 @@ func main() {
 	// determine the command name and command arguments
 	commandName := ""
 	commandArguments := make([]string, 0)
-	if len(os.Args) > 1 {
-		commandName = os.Args[1]
-		commandArguments = os.Args[1:]
+
+	commandLineArguments := getCommandLineArguments()
+	if len(commandLineArguments) > 0 {
+		commandName = commandLineArguments[0]
+		commandArguments = commandLineArguments[1:]
 	}
 
 	if command := actions.Get(workingDirectory, commandName, commandArguments); command != nil {
-		command.Execute()
+
+		if whatIfFlag {
+			ui.Message("Performing a dry-run. No changes will we applied to the system.")
+			command.DryRun()
+		} else {
+			command.Execute()
+
+		}
+
 		os.Exit(0)
 	}
 
 	// print the help if no command was recognized
 	usage()
+}
+
+func getCommandLineArguments() []string {
+	args := make([]string, 0)
+	for _, arg := range os.Args[1:] {
+		whatIfFlagArg := fmt.Sprintf("-%s", whatIfFlagName)
+		if strings.HasPrefix(arg, whatIfFlagArg) {
+			continue
+		}
+
+		args = append(args, arg)
+	}
+
+	return args
+}
+
+func getApplicationName() string {
+	return os.Args[0]
 }
 
 var usage = func() {
@@ -62,7 +92,7 @@ var usage = func() {
 	ui.Message("")
 
 	// usage
-	ui.Message("usage: %s <command> [args] [-whatif]", os.Args[0])
+	ui.Message("usage: [-whatif] %s <command> [args]", getApplicationName())
 	ui.Message("")
 
 	// commands
