@@ -11,13 +11,6 @@ import (
 	"path/filepath"
 )
 
-type Project struct {
-	Map *mapping.PathMap
-
-	name      string
-	directory string
-}
-
 func newProject(directory, projectFileName string) (*Project, error) {
 
 	projectFilePath := filepath.Join(directory, projectFileName)
@@ -38,6 +31,13 @@ func newProject(directory, projectFileName string) (*Project, error) {
 		name:      filepath.Base(directory),
 		directory: directory,
 	}, nil
+}
+
+type Project struct {
+	Map *mapping.PathMap
+
+	name      string
+	directory string
 }
 
 func (project *Project) String() string {

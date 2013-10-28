@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -50,6 +51,91 @@ func GetLines(inFile io.Reader) []string {
 func CreateDirectory(path string) bool {
 	err := os.MkdirAll(path, 0700)
 	return err == nil
+}
+
+func Copy(source, target string) (success bool, err error) {
+
+	// check if the source is a file
+	if IsFile(source) {
+		return CopyFile(source, target)
+	}
+
+	// the source must be a directory
+	// read the source directory
+	sourceEntries, err := ioutil.ReadDir(source)
+	if err != nil {
+		return false, err
+	}
+
+	for _, sourceEntry := range sourceEntries {
+		sourceEntryPath := filepath.Join(source, sourceEntry.Name())
+
+		// recurse into the sub-directory
+		if sourceEntry.IsDir() {
+			nestedTargetPath := filepath.Join(target, sourceEntry.Name())
+			if _, err := Copy(sourceEntryPath, nestedTargetPath); err != nil {
+				return false, err // abort if an error occurs
+			}
+
+			continue
+		}
+
+		// copy the file
+		targetFilePath := filepath.Join(target, sourceEntry.Name())
+		if _, err := CopyFile(sourceEntryPath, targetFilePath); err != nil {
+			return false, err // abort if an error occurs
+		}
+	}
+
+	// if no error occured everything must be ok
+	return true, nil
+}
+
+func CopyFile(source, target string) (success bool, err error) {
+	if !IsFile(source) {
+		return false, fmt.Errorf("%q is not a file.", source)
+	}
+
+	// open the source file
+	sourceReader, readerErr := os.Open(source)
+	if readerErr != nil {
+		return false, readerErr
+	}
+
+	defer sourceReader.Close()
+
+	// prepare the target file
+	var targetFileMode os.FileMode = 0600
+	if !FileExists(target) {
+
+		// make sure the path to the target file exists
+		if _, createFileErr := CreateFile(target); createFileErr != nil {
+			return false, fmt.Errorf("Unable to create the target file %q. Error: %s", target, err)
+		}
+	} else {
+
+		// use the same file mode if the file already exists
+		if targetFileInfo, targetFileInfoErr := os.Stat(target); targetFileInfoErr == nil {
+			targetFileMode = targetFileInfo.Mode().Perm()
+		}
+
+	}
+
+	// open the target file for writing
+	targetWriter, writerErr := os.OpenFile(target, os.O_RDWR|os.O_CREATE|os.O_TRUNC, targetFileMode)
+	if writerErr != nil {
+		return false, writerErr
+	}
+
+	defer targetWriter.Close()
+
+	// copy from source to target
+	_, copyErr := io.Copy(targetWriter, sourceReader)
+	if copyErr != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func CreateFile(filePath string) (success bool, err error) {

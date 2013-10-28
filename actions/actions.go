@@ -5,6 +5,7 @@
 package actions
 
 import (
+	"github.com/andreaskoch/dotman/actions/importer"
 	"github.com/andreaskoch/dotman/actions/list"
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
@@ -19,6 +20,7 @@ func init() {
 	// initialize the list of available actions
 	availableActions = []ActionMetaData{
 		NewActionInfo(list.ActionName, list.ActionDescription),
+		NewActionInfo(importer.ActionName, importer.ActionDescription),
 	}
 }
 
@@ -31,10 +33,16 @@ func Get(workingDirectory string, actionName string, arguments []string) Action 
 
 	// detect which action is requested
 	switch actionName {
+
 	case list.ActionName:
 		return list.New(projectsProvider)
+
+	case importer.ActionName:
+		return importer.New(projectsProvider)
+
 	default:
 		return nil // no matching found
+
 	}
 
 	panic("Unreachable")
