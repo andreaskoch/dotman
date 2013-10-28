@@ -5,6 +5,7 @@
 package actions
 
 import (
+	"github.com/andreaskoch/dotman/actions/backup"
 	"github.com/andreaskoch/dotman/actions/importer"
 	"github.com/andreaskoch/dotman/actions/list"
 	"github.com/andreaskoch/dotman/projects"
@@ -21,6 +22,7 @@ func init() {
 	availableActions = []ActionMetaData{
 		NewActionInfo(list.ActionName, list.ActionDescription),
 		NewActionInfo(importer.ActionName, importer.ActionDescription),
+		NewActionInfo(backup.ActionName, backup.ActionDescription),
 	}
 }
 
@@ -39,6 +41,9 @@ func Get(workingDirectory string, actionName string, arguments []string) Action 
 
 	case importer.ActionName:
 		return importer.New(projectsProvider)
+
+	case backup.ActionName:
+		return backup.New(projectsProvider)
 
 	default:
 		return nil // no matching found

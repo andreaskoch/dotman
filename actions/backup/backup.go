@@ -1,0 +1,138 @@
+// Copyright 2013 Andreas Koch. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package backup
+
+import (
+	"archive/tar"
+	"bytes"
+	"fmt"
+	"github.com/andreaskoch/dotman/projects"
+	"github.com/andreaskoch/dotman/ui"
+	"github.com/andreaskoch/dotman/util/fs"
+	"io"
+	"os"
+	"path/filepath"
+	"time"
+)
+
+const (
+	BackupDirectoryName = ".backups"
+	ActionName          = "backup"
+	ActionDescription   = "Backup your current configuration files."
+)
+
+type Backup struct {
+	projectCollectionProvider func() *projects.Collection
+}
+
+func New(projectCollectionProvider func() *projects.Collection) *Backup {
+	return &Backup{
+		projectCollectionProvider: projectCollectionProvider,
+	}
+}
+
+func (backup *Backup) Name() string {
+	return ActionName
+}
+
+func (backup *Backup) Description() string {
+	return ActionDescription
+}
+
+func (backup *Backup) Execute() {
+	backup.execute(false)
+}
+
+func (backup *Backup) DryRun() {
+	backup.execute(true)
+}
+
+func (backup *Backup) execute(executeADryRunOnly bool) {
+
+	projects := backup.projectCollectionProvider()
+
+	// assemble a list of all files to backup
+	files := make([]string, 0)
+	for _, project := range projects.Collection {
+		for _, entry := range project.Map.Entries {
+			targetFile := entry.Target.String()
+			files = append(files, targetFile)
+		}
+	}
+
+	// make sure the archive directory exists
+	archiveDirectory := filepath.Join(projects.BaseDirectory, BackupDirectoryName)
+	if !fs.DirectoryExists(archiveDirectory) {
+		if !fs.CreateDirectory(archiveDirectory) {
+			ui.Fatal("Unable to create the backup directory %q.", archiveDirectory)
+		}
+	}
+
+	// assemble a filename for the backup archive
+	const dateLayout = "2006-01-02 15:04:05"
+	filename := fmt.Sprintf("%s.tar", time.Now().Format(dateLayout))
+	archivePath := filepath.Join(archiveDirectory, filename)
+
+	// create the archive
+	createTarArchive(archivePath, files)
+}
+
+func createTarArchive(archivePath string, files []string) {
+
+	// Create a buffer to write our archive to.
+	buffer := new(bytes.Buffer)
+
+	// create the archive writer
+	archiveWriter, archiveWriterError := os.OpenFile(archivePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0600)
+	if archiveWriterError != nil {
+		ui.Fatal("%s", archiveWriterError)
+	}
+
+	defer func() {
+		archiveWriter.Write(buffer.Bytes())
+		archiveWriter.Close()
+	}()
+
+	// Create a new tar archive.
+	archive := tar.NewWriter(buffer)
+
+	// Add some files to the archive.
+	for _, file := range files {
+
+		// open the source file
+		fileReader, readerError := os.Open(file)
+		if readerError != nil {
+			ui.Fatal("%s", readerError) // unable to open target file
+		}
+
+		defer fileReader.Close()
+
+		fileInfo, fileInfoError := os.Stat(file)
+		if fileInfoError != nil {
+			ui.Fatal("%s", fileInfoError) // unable to get file info
+		}
+
+		// create the file header
+		fileHeader := &tar.Header{
+			Name: file,
+			Size: fileInfo.Size(),
+		}
+
+		// write the file header
+		if fileHeaderError := archive.WriteHeader(fileHeader); fileHeaderError != nil {
+			ui.Fatal("%s", fileHeaderError)
+		}
+
+		// write the file content
+		if _, copyError := io.Copy(archive, fileReader); copyError != nil {
+			ui.Fatal("%s", copyError)
+		}
+	}
+
+	// check for errors
+	if closeError := archive.Close(); closeError != nil {
+		ui.Fatal("%s", closeError)
+	}
+}
