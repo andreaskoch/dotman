@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/andreaskoch/dotman/actions"
 	"github.com/andreaskoch/dotman/ui"
 	"os"
@@ -14,7 +15,23 @@ const (
 	VERSION = "0.1.0"
 )
 
+var (
+	// the what-if flag
+	whatIfFlag            = false
+	whatIfFlagName        = "whatif"
+	whatIfFlagDescription = "Enable the dry-run mode. Nothing is changed. Only print out what would happen."
+)
+
+func init() {
+	// define flags
+	flag.BoolVar(&whatIfFlag, whatIfFlagName, whatIfFlag, whatIfFlagDescription)
+
+}
+
 func main() {
+
+	// parse the command-line options
+	flag.Parse()
 
 	// determine working directory
 	workingDirectory, err := os.Getwd()
@@ -45,15 +62,19 @@ var usage = func() {
 	ui.Message("")
 
 	// usage
-	ui.Message("usage: %s <command> [args]", os.Args[0])
+	ui.Message("usage: %s <command> [args] [-whatif]", os.Args[0])
 	ui.Message("")
 
 	// commands
-
 	ui.Message("Available commands are:")
 	for _, action := range actions.GetAll() {
 		ui.Message("    %s %s  %s", action.Name(), getActionSpacer(action.Name()), action.Description())
 	}
+
+	// flags
+	ui.Message("")
+	ui.Message("Options:")
+	ui.Message("    %s %s  %s", whatIfFlagName, getActionSpacer(whatIfFlagName), whatIfFlagDescription)
 }
 
 func getActionSpacer(action string) string {
