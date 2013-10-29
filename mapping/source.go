@@ -20,27 +20,16 @@ func newSourcePath(baseDirectory, specification string) (*SourcePath, error) {
 	// normalize the path specification
 	specification = normalizePathSpecification(specification)
 
-	// check for wildcard
-	if isWildcard, wildcardBaseDirectory := isWildcardSpecification(specification); isWildcard {
-
-		// assemble to absolute wildcard base path
-		wildcardBasePath := filepath.Join(baseDirectory, wildcardBaseDirectory)
-
-		return &SourcePath{
-			Files: getAllFilesInDirectory(wildcardBasePath),
-		}, nil
-	}
-
 	fullPath := filepath.Join(baseDirectory, specification)
 	return &SourcePath{
-		Files: []string{fullPath},
+		path: fullPath,
 	}, nil
 }
 
 type SourcePath struct {
-	Files []string
+	path string
 }
 
-func (sourcePath *SourcePath) String() string {
-	return strings.Join(sourcePath.Files, ", ")
+func (sourcePath *SourcePath) Path() string {
+	return sourcePath.path
 }

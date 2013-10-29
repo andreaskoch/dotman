@@ -6,9 +6,7 @@ package mapping
 
 import (
 	"github.com/andreaskoch/dotman/util/fs"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -24,24 +22,6 @@ var (
 
 	WindowsEnvironmentVariablePattern = regexp.MustCompile(`%(\w+)%`)
 )
-
-func isWildcardSpecification(path string) (isWildcard bool, wildcardBaseDirectory string) {
-
-	// split the path into its components
-	components := strings.Split(path, string(os.PathSeparator))
-
-	// check if the last path component is a star
-	lastComponent := components[len(components)-1]
-	isWildcard = lastComponent == "*"
-
-	// determine the wild base directory
-	if isWildcard && len(components) > 1 {
-		indexOfLastComponentBeforeWildcard := len(components) - 1
-		wildcardBaseDirectory = strings.Join(components[0:indexOfLastComponentBeforeWildcard], string(os.PathSeparator))
-	}
-
-	return isWildcard, wildcardBaseDirectory
-}
 
 func normalizePathSpecification(path string) string {
 
@@ -95,32 +75,4 @@ func isEmptyLine(line string) bool {
 
 func isComment(line string) bool {
 	return strings.HasPrefix(strings.TrimSpace(line), "#")
-}
-
-func getAllFilesInDirectory(path string) []string {
-
-	files := []string{path}
-
-	if !fs.IsDirectory(path) {
-		return files
-	}
-
-	directoryEntries, err := ioutil.ReadDir(path)
-	if err != nil {
-		return files
-	}
-
-	for _, entry := range directoryEntries {
-
-		entryPath := filepath.Join(path, entry.Name())
-
-		// recurse
-		if entry.IsDir() {
-			files = append(files, getAllFilesInDirectory(entryPath)...)
-		}
-
-		files = append(files, entryPath)
-	}
-
-	return files
 }

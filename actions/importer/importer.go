@@ -54,12 +54,12 @@ func (importer *Importer) execute(executeADryRunOnly bool) {
 func importProject(project *projects.Project, executeADryRunOnly bool) {
 
 	for _, entry := range project.Map.Entries {
-		sourceFile := entry.Target.Path()
-		targetFile := entry.Source.String()
+		source := entry.Target.Path()
+		target := entry.Source.Path()
 
-		ui.Message("Copy: %s → %s", sourceFile, targetFile)
+		ui.Message("Copy: %s → %s", source, target)
 		if !executeADryRunOnly {
-			if _, err := fs.Copy(sourceFile, targetFile); err != nil {
+			if _, err := fs.Copy(source, target); err != nil {
 				ui.Message("%s", err)
 			}
 		}

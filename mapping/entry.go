@@ -43,11 +43,5 @@ type PathMapEntry struct {
 }
 
 func (pathMapEntry *PathMapEntry) String() string {
-	text := ""
-
-	for _, source := range pathMapEntry.Source.Files {
-		text += fmt.Sprintf("%s → %s\n", source, pathMapEntry.Target.Path)
-	}
-
-	return text
+	return fmt.Sprintf("%s → %s\n", pathMapEntry.Source.Path(), pathMapEntry.Target.Path())
 }
