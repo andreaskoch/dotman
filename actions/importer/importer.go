@@ -12,7 +12,7 @@ import (
 
 const (
 	ActionName        = "import"
-	ActionDescription = "Import your current configuration files."
+	ActionDescription = "Import files based on your current dotman configurations."
 )
 
 type Importer struct {

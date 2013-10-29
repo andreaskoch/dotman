@@ -12,7 +12,7 @@ import (
 
 const (
 	ActionName        = "deploy"
-	ActionDescription = "Deploy your current configuration files."
+	ActionDescription = "Deploy your projects."
 )
 
 type Deploy struct {

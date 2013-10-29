@@ -18,9 +18,9 @@ import (
 )
 
 const (
-	BackupDirectoryName = ".backups"
+	BackupDirectoryName = ".backup"
 	ActionName          = "backup"
-	ActionDescription   = "Backup your current configuration files."
+	ActionDescription   = "Backup your target files."
 )
 
 type Backup struct {

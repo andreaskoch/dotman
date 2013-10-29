@@ -11,7 +11,7 @@ import (
 
 const (
 	ActionName        = "list"
-	ActionDescription = "Get a list of all projects."
+	ActionDescription = "Get a list of all projects in the current dotfile collection."
 )
 
 type List struct {
