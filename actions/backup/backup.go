@@ -76,10 +76,15 @@ func (backup *Backup) execute(executeADryRunOnly bool) {
 	archivePath := filepath.Join(archiveDirectory, filename)
 
 	// create the archive
-	createTarArchive(archivePath, files)
+	_, err := createTarArchive(archivePath, files)
+	if err != nil {
+		ui.Fatal("Unable to create a backup (%q). %s", archivePath, err)
+	}
+
+	ui.Message("The backup has been saved to %q.", archivePath)
 }
 
-func createTarArchive(archivePath string, files []string) {
+func createTarArchive(archivePath string, files []string) (success bool, err error) {
 
 	// Create a buffer to write our archive to.
 	buffer := new(bytes.Buffer)
@@ -87,7 +92,7 @@ func createTarArchive(archivePath string, files []string) {
 	// create the archive writer
 	archiveWriter, archiveWriterError := os.OpenFile(archivePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0600)
 	if archiveWriterError != nil {
-		ui.Fatal("%s", archiveWriterError)
+		return false, fmt.Errorf("%s", archiveWriterError)
 	}
 
 	defer func() {
@@ -104,14 +109,14 @@ func createTarArchive(archivePath string, files []string) {
 		// open the source file
 		fileReader, readerError := os.Open(file)
 		if readerError != nil {
-			ui.Fatal("%s", readerError) // unable to open target file
+			return false, fmt.Errorf("%s", readerError) // unable to open target file
 		}
 
 		defer fileReader.Close()
 
 		fileInfo, fileInfoError := os.Stat(file)
 		if fileInfoError != nil {
-			ui.Fatal("%s", fileInfoError) // unable to get file info
+			return false, fmt.Errorf("%s", fileInfoError) // unable to get file info
 		}
 
 		// create the file header
@@ -122,17 +127,19 @@ func createTarArchive(archivePath string, files []string) {
 
 		// write the file header
 		if fileHeaderError := archive.WriteHeader(fileHeader); fileHeaderError != nil {
-			ui.Fatal("%s", fileHeaderError)
+			return false, fmt.Errorf("%s", fileHeaderError)
 		}
 
 		// write the file content
 		if _, copyError := io.Copy(archive, fileReader); copyError != nil {
-			ui.Fatal("%s", copyError)
+			return false, fmt.Errorf("%s", copyError)
 		}
 	}
 
 	// check for errors
 	if closeError := archive.Close(); closeError != nil {
-		ui.Fatal("%s", closeError)
+		return false, fmt.Errorf("%s", closeError)
 	}
+
+	return true, nil
 }
