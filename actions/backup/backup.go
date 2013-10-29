@@ -75,13 +75,24 @@ func (backup *Backup) execute(executeADryRunOnly bool) {
 	filename := fmt.Sprintf("%s.tar", time.Now().Format(dateLayout))
 	archivePath := filepath.Join(archiveDirectory, filename)
 
-	// create the archive
-	_, err := createTarArchive(archivePath, files)
-	if err != nil {
-		ui.Fatal("Unable to create a backup (%q). %s", archivePath, err)
-	}
+	if !executeADryRunOnly {
 
-	ui.Message("The backup has been saved to %q.", archivePath)
+		// create the archive
+		_, err := createTarArchive(archivePath, files)
+		if err != nil {
+			ui.Fatal("Unable to create a backup (%q). %s", archivePath, err)
+		}
+
+		ui.Message("The backup has been saved to %q.", archivePath)
+
+	} else {
+
+		ui.Message("Creating archive %s:", archivePath)
+		for number, file := range files {
+			ui.Message("%d. Adding file %q", (number + 1), file)
+		}
+
+	}
 }
 
 func createTarArchive(archivePath string, files []string) (success bool, err error) {
