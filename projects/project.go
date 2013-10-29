@@ -27,19 +27,29 @@ func newProject(directory, projectFileName string) (*Project, error) {
 	}
 
 	return &Project{
-		Map:       projectPathMap,
-		name:      filepath.Base(directory),
-		directory: directory,
+		Map:         projectPathMap,
+		name:        filepath.Base(directory),
+		directory:   directory,
+		projectFile: projectFilePath,
 	}, nil
 }
 
 type Project struct {
 	Map *mapping.PathMap
 
-	name      string
-	directory string
+	name        string
+	directory   string
+	projectFile string
 }
 
 func (project *Project) String() string {
 	return project.name
+}
+
+func (project *Project) Directory() string {
+	return project.directory
+}
+
+func (project *Project) ProjectFile() string {
+	return project.projectFile
 }

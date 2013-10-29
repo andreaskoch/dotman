@@ -56,6 +56,11 @@ func (backup *Backup) execute(executeADryRunOnly bool) {
 	// assemble a list of all files to backup
 	files := make([]string, 0)
 	for _, project := range projects.Collection {
+
+		// add the project file
+		files = append(files, project.ProjectFile())
+
+		// add all target files
 		for _, entry := range project.Map.Entries {
 			targetFile := entry.Target.String()
 			files = append(files, targetFile)
