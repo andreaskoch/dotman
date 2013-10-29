@@ -29,14 +29,14 @@ func newTargetPath(targetPath string) (*TargetPath, error) {
 	}
 
 	return &TargetPath{
-		Path: targetPath,
+		path: targetPath,
 	}, nil
 }
 
 type TargetPath struct {
-	Path string
+	path string
 }
 
-func (targetPath *TargetPath) String() string {
-	return targetPath.Path
+func (targetPath *TargetPath) Path() string {
+	return targetPath.path
 }

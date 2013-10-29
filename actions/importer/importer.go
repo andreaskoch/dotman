@@ -54,7 +54,7 @@ func (importer *Importer) execute(executeADryRunOnly bool) {
 func importProject(project *projects.Project, executeADryRunOnly bool) {
 
 	for _, entry := range project.Map.Entries {
-		sourceFile := entry.Target.String()
+		sourceFile := entry.Target.Path()
 		targetFile := entry.Source.String()
 
 		ui.Message("Copy: %s → %s", sourceFile, targetFile)

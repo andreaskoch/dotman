@@ -62,7 +62,7 @@ func (backup *Backup) execute(executeADryRunOnly bool) {
 
 		// add all target files
 		for _, entry := range project.Map.Entries {
-			targetFile := entry.Target.String()
+			targetFile := entry.Target.Path()
 			files = append(files, targetFile)
 		}
 	}
