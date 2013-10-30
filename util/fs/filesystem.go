@@ -244,6 +244,7 @@ func GetAllFilesInDirectory(path string) []string {
 		// recurse
 		if entry.IsDir() {
 			files = append(files, GetAllFilesInDirectory(entryPath)...)
+			continue
 		}
 
 		files = append(files, entryPath)
