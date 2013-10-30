@@ -78,7 +78,8 @@ func (backup *Backup) execute(executeADryRunOnly bool) {
 	// make sure the archive directory exists
 	archiveDirectory := filepath.Join(projects.BaseDirectory, BackupDirectoryName)
 	if !fs.DirectoryExists(archiveDirectory) {
-		if !fs.CreateDirectory(archiveDirectory) {
+		ui.Message("Creating backup directory %q.", archiveDirectory)
+		if !executeADryRunOnly && !fs.CreateDirectory(archiveDirectory) {
 			ui.Fatal("Unable to create the backup directory %q.", archiveDirectory)
 		}
 	}
