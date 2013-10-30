@@ -62,8 +62,16 @@ func (backup *Backup) execute(executeADryRunOnly bool) {
 
 		// add all target files
 		for _, entry := range project.Map.Entries {
-			targetFile := entry.Target.Path()
-			files = append(files, targetFile)
+
+			targetPath := entry.Target.Path()
+			if !fs.IsDirectory(targetPath) {
+				files = append(files, targetPath)
+				continue
+			}
+
+			subDirectoryFiles := fs.GetAllFilesInDirectory(targetPath)
+			files = append(files, subDirectoryFiles...)
+
 		}
 	}
 
@@ -85,7 +93,7 @@ func (backup *Backup) execute(executeADryRunOnly bool) {
 		// create the archive
 		_, err := createTarArchive(archivePath, files)
 		if err != nil {
-			ui.Fatal("Unable to create a backup (%q). %s", archivePath, err)
+			ui.Fatal("Unable to create a backup %q. %s", archivePath, err)
 		}
 
 		ui.Message("The backup has been saved to %q.", archivePath)

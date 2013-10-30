@@ -223,3 +223,31 @@ func GetUserHomeDirectory() (string, error) {
 
 	return filepath.Clean(usr.HomeDir), nil
 }
+
+func GetAllFilesInDirectory(path string) []string {
+
+	files := make([]string, 0)
+
+	if !IsDirectory(path) {
+		return files
+	}
+
+	directoryEntries, err := ioutil.ReadDir(path)
+	if err != nil {
+		return files
+	}
+
+	for _, entry := range directoryEntries {
+
+		entryPath := filepath.Join(path, entry.Name())
+
+		// recurse
+		if entry.IsDir() {
+			files = append(files, GetAllFilesInDirectory(entryPath)...)
+		}
+
+		files = append(files, entryPath)
+	}
+
+	return files
+}
