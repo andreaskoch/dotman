@@ -33,15 +33,15 @@ func (deploy *Deploy) Description() string {
 	return ActionDescription
 }
 
-func (deploy *Deploy) Execute() {
-	deploy.execute(false)
+func (deploy *Deploy) Execute(arguments []string) {
+	deploy.execute(false, arguments)
 }
 
-func (deploy *Deploy) DryRun() {
-	deploy.execute(true)
+func (deploy *Deploy) DryRun(arguments []string) {
+	deploy.execute(true, arguments)
 }
 
-func (deploy *Deploy) execute(executeADryRunOnly bool) {
+func (deploy *Deploy) execute(executeADryRunOnly bool, arguments []string) {
 
 	projects := deploy.projectCollectionProvider()
 	for _, project := range projects.Collection {

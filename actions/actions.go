@@ -28,7 +28,7 @@ func init() {
 	}
 }
 
-func Get(workingDirectory string, actionName string, arguments []string) Action {
+func Get(workingDirectory string, actionName string) Action {
 
 	// create a projects provider for the supplied working directory
 	projectsProvider := func() *projects.Collection {

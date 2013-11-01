@@ -33,15 +33,15 @@ func (importer *Importer) Description() string {
 	return ActionDescription
 }
 
-func (importer *Importer) Execute() {
-	importer.execute(false)
+func (importer *Importer) Execute(arguments []string) {
+	importer.execute(false, arguments)
 }
 
-func (importer *Importer) DryRun() {
-	importer.execute(true)
+func (importer *Importer) DryRun(arguments []string) {
+	importer.execute(true, arguments)
 }
 
-func (importer *Importer) execute(executeADryRunOnly bool) {
+func (importer *Importer) execute(executeADryRunOnly bool, arguments []string) {
 
 	projects := importer.projectCollectionProvider()
 	for _, project := range projects.Collection {

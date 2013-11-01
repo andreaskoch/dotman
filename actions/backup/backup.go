@@ -41,15 +41,15 @@ func (backup *Backup) Description() string {
 	return ActionDescription
 }
 
-func (backup *Backup) Execute() {
-	backup.execute(false)
+func (backup *Backup) Execute(arguments []string) {
+	backup.execute(false, arguments)
 }
 
-func (backup *Backup) DryRun() {
-	backup.execute(true)
+func (backup *Backup) DryRun(arguments []string) {
+	backup.execute(true, arguments)
 }
 
-func (backup *Backup) execute(executeADryRunOnly bool) {
+func (backup *Backup) execute(executeADryRunOnly bool, arguments []string) {
 
 	projects := backup.projectCollectionProvider()
 

@@ -12,8 +12,8 @@ type ActionMetaData interface {
 type Action interface {
 	Name() string
 	Description() string
-	DryRun()
-	Execute()
+	DryRun(arguments []string)
+	Execute(arguments []string)
 }
 
 type ActionInfo struct {

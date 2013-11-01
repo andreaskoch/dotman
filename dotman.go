@@ -51,13 +51,13 @@ func main() {
 		commandArguments = commandLineArguments[1:]
 	}
 
-	if command := actions.Get(workingDirectory, commandName, commandArguments); command != nil {
+	if command := actions.Get(workingDirectory, commandName); command != nil {
 
 		if whatIfFlag {
 			ui.Message("Performing a dry-run. No changes will we applied to the system.")
-			command.DryRun()
+			command.DryRun(commandArguments)
 		} else {
-			command.Execute()
+			command.Execute(commandArguments)
 
 		}
 

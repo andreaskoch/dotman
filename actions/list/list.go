@@ -32,15 +32,15 @@ func (list *List) Description() string {
 	return ActionDescription
 }
 
-func (list *List) Execute() {
-	list.execute()
+func (list *List) Execute(arguments []string) {
+	list.execute(arguments)
 }
 
-func (list *List) DryRun() {
-	list.execute()
+func (list *List) DryRun(arguments []string) {
+	list.execute(arguments)
 }
 
-func (list *List) execute() {
+func (list *List) execute(arguments []string) {
 	projects := list.projectCollectionProvider()
 
 	for _, project := range projects.Collection {
