@@ -8,6 +8,8 @@ import (
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
+	"regexp"
+	"strings"
 )
 
 const (
@@ -43,8 +45,31 @@ func (importer *Importer) DryRun(arguments []string) {
 
 func (importer *Importer) execute(executeADryRunOnly bool, arguments []string) {
 
+	// extract the project filter from the arguments
+	projectFilter := regexp.MustCompile(`.*`)
+	if len(arguments) > 0 && strings.TrimSpace(arguments[0]) != "" {
+
+		// get the custom project filter from the command arguments
+		projectFilterText := strings.TrimSpace(arguments[0])
+
+		// try to compile the filter
+		customProjectFilter, err := regexp.Compile(projectFilterText)
+		if err != nil {
+			ui.Fatal("%q is not a valid project filter. Error: %s", projectFilterText, err.Error())
+		}
+
+		// assign the supplied custom filter
+		projectFilter = customProjectFilter
+	}
+
 	projects := importer.projectCollectionProvider()
 	for _, project := range projects.Collection {
+
+		// skip projects which don't match the filter
+		if !projectFilter.MatchString(project.String()) {
+			continue
+		}
+
 		ui.Message("Importing %q", project)
 		importProject(project, executeADryRunOnly)
 	}
