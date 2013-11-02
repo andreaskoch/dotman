@@ -5,6 +5,7 @@
 package deploy
 
 import (
+	"github.com/andreaskoch/dotman/actions/base"
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
@@ -16,42 +17,19 @@ const (
 )
 
 type Deploy struct {
-	projectCollectionProvider func() *projects.Collection
+	*base.Action
 }
 
 func New(projectCollectionProvider func() *projects.Collection) *Deploy {
 	return &Deploy{
-		projectCollectionProvider: projectCollectionProvider,
+		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
+			ui.Message("Deploying %q", project)
+			deployProject(project, executeADryRunOnly)
+		}),
 	}
 }
 
-func (deploy *Deploy) Name() string {
-	return ActionName
-}
-
-func (deploy *Deploy) Description() string {
-	return ActionDescription
-}
-
-func (deploy *Deploy) Execute(arguments []string) {
-	deploy.execute(false, arguments)
-}
-
-func (deploy *Deploy) DryRun(arguments []string) {
-	deploy.execute(true, arguments)
-}
-
-func (deploy *Deploy) execute(executeADryRunOnly bool, arguments []string) {
-
-	projects := deploy.projectCollectionProvider()
-	for _, project := range projects.Collection {
-		ui.Message("Deploying %q", project)
-		importProject(project, executeADryRunOnly)
-	}
-
-}
-
-func importProject(project *projects.Project, executeADryRunOnly bool) {
+func deployProject(project *projects.Project, executeADryRunOnly bool) {
 
 	for _, entry := range project.Map.Entries {
 		source := entry.Source.Path()
