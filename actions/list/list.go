@@ -5,6 +5,7 @@
 package list
 
 import (
+	"github.com/andreaskoch/dotman/actions/base"
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
 )
@@ -15,35 +16,13 @@ const (
 )
 
 type List struct {
-	projectCollectionProvider func() *projects.Collection
+	*base.Action
 }
 
 func New(projectCollectionProvider func() *projects.Collection) *List {
 	return &List{
-		projectCollectionProvider: projectCollectionProvider,
-	}
-}
-
-func (list *List) Name() string {
-	return ActionName
-}
-
-func (list *List) Description() string {
-	return ActionDescription
-}
-
-func (list *List) Execute(arguments []string) {
-	list.execute(arguments)
-}
-
-func (list *List) DryRun(arguments []string) {
-	list.execute(arguments)
-}
-
-func (list *List) execute(arguments []string) {
-	projects := list.projectCollectionProvider()
-
-	for _, project := range projects.Collection {
-		ui.Message("%s", project)
+		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
+			ui.Message("%s", project)
+		}),
 	}
 }
