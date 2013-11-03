@@ -34,13 +34,13 @@ func New(projectCollectionProvider func() *projects.Collection) *Importer {
 func importProject(project *projects.Project, executeADryRunOnly bool) {
 
 	// build the copy-map
-	copyMap := make(map[string]string)
 	for _, pathMapEntry := range project.Map.Entries {
 
 		source := pathMapEntry.Target
 		target := pathMapEntry.Source
 		patternText := pathMapEntry.Pattern
 
+		// copy one or more files
 		if patternText != "" {
 
 			pattern, err := regexp.Compile(patternText)
@@ -52,22 +52,23 @@ func importProject(project *projects.Project, executeADryRunOnly bool) {
 			for _, sourceEntry := range sourceEntries {
 				sourceEntryName := filepath.Base(sourceEntry)
 				targetEntry := filepath.Join(target, sourceEntryName)
-				copyMap[sourceEntry] = targetEntry
+				copy(sourceEntry, targetEntry, executeADryRunOnly)
 			}
-		} else {
-			copyMap[source] = target
+
+			continue
+
 		}
+
+		// copy a single file or folder
+		copy(source, target, executeADryRunOnly)
 	}
+}
 
-	// copy the files
-	for source := range copyMap {
-		target := copyMap[source]
-
-		ui.Message("Copy %s → %s", source, target)
-		if !executeADryRunOnly {
-			if _, err := fs.Copy(source, target); err != nil {
-				ui.Message("%s", err)
-			}
+func copy(source, target string, executeADryRunOnly bool) {
+	ui.Message("Copy %s → %s", source, target)
+	if !executeADryRunOnly {
+		if _, err := fs.Copy(source, target); err != nil {
+			ui.Message("%s", err)
 		}
 	}
 }
