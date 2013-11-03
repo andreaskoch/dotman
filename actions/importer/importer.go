@@ -6,10 +6,11 @@ package importer
 
 import (
 	"github.com/andreaskoch/dotman/actions/base"
-	"github.com/andreaskoch/dotman/mapping"
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
+	"path/filepath"
+	"regexp"
 )
 
 const (
@@ -32,10 +33,35 @@ func New(projectCollectionProvider func() *projects.Collection) *Importer {
 
 func importProject(project *projects.Project, executeADryRunOnly bool) {
 
+	// build the copy-map
+	copyMap := make(map[string]string)
 	for _, pathMapEntry := range project.Map.Entries {
 
-		source := pathMapEntry.Source
-		target := pathMapEntry.Target
+		source := pathMapEntry.Target
+		target := pathMapEntry.Source
+		patternText := pathMapEntry.Pattern
+
+		if patternText != "" {
+
+			pattern, err := regexp.Compile(patternText)
+			if err != nil {
+				ui.Fatal("%s", err)
+			}
+
+			sourceEntries := fs.GetMatchingDirectoryEntries(source, pattern)
+			for _, sourceEntry := range sourceEntries {
+				sourceEntryName := filepath.Base(sourceEntry)
+				targetEntry := filepath.Join(target, sourceEntryName)
+				copyMap[sourceEntry] = targetEntry
+			}
+		} else {
+			copyMap[source] = target
+		}
+	}
+
+	// copy the files
+	for source := range copyMap {
+		target := copyMap[source]
 
 		ui.Message("Copy %s → %s", source, target)
 		if !executeADryRunOnly {

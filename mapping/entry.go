@@ -7,54 +7,47 @@ package mapping
 import (
 	"fmt"
 	"path/filepath"
+	"regexp"
+	"strings"
 )
 
-func newPathMapEntries(baseDirectory, dotmanPathMapEntry string) ([]*PathMapEntry, error) {
+var (
+	PathMapEntrySeparatorPattern = regexp.MustCompile(`(?:\s{2,}|\t+)`)
+)
 
-	entries := make([]*PathMapEntry, 0)
+func newPathMapEntry(baseDirectory, dotmanPathMapEntry string) (*PathMapEntry, error) {
 
 	// find source and target path matching in the supplied map entry
-	matches := PathMapEntryPattern.FindStringSubmatch(dotmanPathMapEntry)
-	if len(matches) < 3 {
-		return entries, fmt.Errorf("%q is not a valid path map entry.", dotmanPathMapEntry)
+	entries := PathMapEntrySeparatorPattern.Split(dotmanPathMapEntry, -1)
+	if len(entries) < 2 {
+		return nil, fmt.Errorf("%q is not a valid path map entry.", dotmanPathMapEntry)
 	}
 
-	sourcePathText := normalizePathSpecification(matches[1])
-	targetPathText := normalizePathSpecification(matches[2])
+	// source path
+	sourcePath := filepath.Join(baseDirectory, normalizePathSpecification(entries[0]))
 
-	// prepare the source path
-	sourcePath := filepath.Join(baseDirectory, sourcePathText)
+	// target path
+	targetPath := expandPathVariables(normalizePathSpecification(entries[1]))
 
-	// prepare the target path
-	targetPath := expandPathVariables(targetPathText)
-
-	// glob pattern matching
-	matches, err := filepath.Glob(sourcePath)
-	if err != nil {
-		return entries, err
+	// glob pattern
+	globPattern := ""
+	if len(entries) == 3 {
+		globPattern = strings.TrimSpace(entries[2])
 	}
 
-	for _, sourcePath := range matches {
-
-		// determine the target path
-		sourceEntryName := filepath.Base(sourcePath)
-		targetPath := filepath.Join(targetPath, sourceEntryName)
-
-		// add a new path map entry
-		entries = append(entries, &PathMapEntry{
-			Source: sourcePath,
-			Target: targetPath,
-		})
-	}
-
-	return entries, nil
+	return &PathMapEntry{
+		Source:  sourcePath,
+		Target:  targetPath,
+		Pattern: globPattern,
+	}, nil
 }
 
 type PathMapEntry struct {
-	Source string
-	Target string
+	Source  string
+	Target  string
+	Pattern string
 }
 
 func (pathMapEntry *PathMapEntry) String() string {
-	return fmt.Sprintf("%s → %s\n", pathMapEntry.Source, pathMapEntry.Target)
+	return fmt.Sprintf("%s → %s (Pattern: %s)", pathMapEntry.Source, pathMapEntry.Target, pathMapEntry.Pattern)
 }

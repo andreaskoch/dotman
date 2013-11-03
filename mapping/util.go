@@ -12,8 +12,6 @@ import (
 )
 
 var (
-	PathMapEntryPattern = regexp.MustCompile(`^(\S.+)(?:\s{2,}|\t+)(\S.+)$`)
-
 	DirectorySeparatorPattern = regexp.MustCompile(`[\/]{1,}`)
 
 	HomeDirectoryBashPattern = regexp.MustCompile(`^~`)

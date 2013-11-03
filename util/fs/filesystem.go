@@ -243,10 +243,6 @@ func getAllDirectoryEntries(path string, recurse bool, includeDirectoryEntry fun
 
 	files := make([]string, 0)
 
-	if !IsDirectory(path) {
-		return files
-	}
-
 	directoryEntries, err := ioutil.ReadDir(path)
 	if err != nil {
 		return files

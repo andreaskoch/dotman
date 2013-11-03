@@ -40,14 +40,14 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 		}
 
 		// create a path map entry from the line
-		newPathMapEntriesFromCurrentLine, err := newPathMapEntries(directory, line)
+		pathMapEntry, err := newPathMapEntry(directory, line)
 		if err != nil {
 			ui.Message("Line %d: %s", lineNumber+1, err)
 			continue
 		}
 
 		// append the path map entry to the list
-		pathMapEntries = append(pathMapEntries, newPathMapEntriesFromCurrentLine...)
+		pathMapEntries = append(pathMapEntries, pathMapEntry)
 	}
 
 	return &PathMap{
