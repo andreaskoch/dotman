@@ -28,8 +28,9 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 	// determine the path map directory
 	directory := filepath.Dir(sourceFile)
 
+	pathMapEntries := make([]*PathMapEntry, 0)
+
 	// read in the lines of the dotman file and create path map entries from it
-	pathMapEntries := make([]PathMapEntry, 0)
 	lines := fs.GetLines(file)
 	for lineNumber, line := range lines {
 
@@ -39,14 +40,14 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 		}
 
 		// create a path map entry from the line
-		pathMapEntry, err := newPathMapEntry(directory, line)
+		newPathMapEntriesFromCurrentLine, err := newPathMapEntries(directory, line)
 		if err != nil {
 			ui.Message("Line %d: %s", lineNumber+1, err)
 			continue
 		}
 
 		// append the path map entry to the list
-		pathMapEntries = append(pathMapEntries, pathMapEntry)
+		pathMapEntries = append(pathMapEntries, newPathMapEntriesFromCurrentLine...)
 	}
 
 	return &PathMap{
@@ -57,7 +58,7 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 
 type PathMap struct {
 	Directory string
-	Entries   []PathMapEntry
+	Entries   []*PathMapEntry
 }
 
 func (pathMap *PathMap) String() string {

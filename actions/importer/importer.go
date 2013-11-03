@@ -6,6 +6,7 @@ package importer
 
 import (
 	"github.com/andreaskoch/dotman/actions/base"
+	"github.com/andreaskoch/dotman/mapping"
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
@@ -23,7 +24,7 @@ type Importer struct {
 func New(projectCollectionProvider func() *projects.Collection) *Importer {
 	return &Importer{
 		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
-			ui.Message("Importing %q", project)
+			ui.Message("\nImporting %q:", project)
 			importProject(project, executeADryRunOnly)
 		}),
 	}
@@ -31,11 +32,12 @@ func New(projectCollectionProvider func() *projects.Collection) *Importer {
 
 func importProject(project *projects.Project, executeADryRunOnly bool) {
 
-	for _, entry := range project.Map.Entries {
-		source := entry.Target.Path()
-		target := entry.Source.Path()
+	for _, pathMapEntry := range project.Map.Entries {
 
-		ui.Message("Copy: %s → %s", source, target)
+		source := pathMapEntry.Source
+		target := pathMapEntry.Target
+
+		ui.Message("Copy %s → %s", source, target)
 		if !executeADryRunOnly {
 			if _, err := fs.Copy(source, target); err != nil {
 				ui.Message("%s", err)

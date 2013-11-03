@@ -63,13 +63,13 @@ func (backup *Backup) execute(executeADryRunOnly bool, arguments []string) {
 		// add all target files
 		for _, entry := range project.Map.Entries {
 
-			targetPath := entry.Target.Path()
+			targetPath := entry.Target
 			if !fs.IsDirectory(targetPath) {
 				files = append(files, targetPath)
 				continue
 			}
 
-			subDirectoryFiles := fs.GetAllFilesInDirectory(targetPath)
+			subDirectoryFiles := fs.GetAllFilesRecursively(targetPath)
 			files = append(files, subDirectoryFiles...)
 
 		}

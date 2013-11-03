@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -224,7 +225,21 @@ func GetUserHomeDirectory() (string, error) {
 	return filepath.Clean(usr.HomeDir), nil
 }
 
-func GetAllFilesInDirectory(path string) []string {
+func GetAllFilesRecursively(path string) []string {
+	recurse := true
+	return getAllDirectoryEntries(path, recurse, func(file os.FileInfo) bool {
+		return !file.IsDir()
+	})
+}
+
+func GetMatchingDirectoryEntries(path string, pattern *regexp.Regexp) []string {
+	recurse := false
+	return getAllDirectoryEntries(path, recurse, func(file os.FileInfo) bool {
+		return pattern.MatchString(file.Name())
+	})
+}
+
+func getAllDirectoryEntries(path string, recurse bool, includeDirectoryEntry func(file os.FileInfo) bool) []string {
 
 	files := make([]string, 0)
 
@@ -241,13 +256,14 @@ func GetAllFilesInDirectory(path string) []string {
 
 		entryPath := filepath.Join(path, entry.Name())
 
-		// recurse
-		if entry.IsDir() {
-			files = append(files, GetAllFilesInDirectory(entryPath)...)
-			continue
+		// recurse?
+		if entry.IsDir() && recurse {
+			files = append(files, getAllDirectoryEntries(entryPath, recurse, includeDirectoryEntry)...)
 		}
 
-		files = append(files, entryPath)
+		if includeDirectoryEntry(entry) {
+			files = append(files, entryPath)
+		}
 	}
 
 	return files

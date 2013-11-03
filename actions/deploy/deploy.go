@@ -32,8 +32,8 @@ func New(projectCollectionProvider func() *projects.Collection) *Deploy {
 func deployProject(project *projects.Project, executeADryRunOnly bool) {
 
 	for _, entry := range project.Map.Entries {
-		source := entry.Source.Path()
-		target := entry.Target.Path()
+		source := entry.Source
+		target := entry.Target
 
 		ui.Message("Copy: %s → %s", source, target)
 		if !executeADryRunOnly {

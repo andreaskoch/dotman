@@ -6,42 +6,55 @@ package mapping
 
 import (
 	"fmt"
-	"strings"
+	"path/filepath"
 )
 
-func newPathMapEntry(baseDirectory, dotmanPathMapEntry string) (PathMapEntry, error) {
+func newPathMapEntries(baseDirectory, dotmanPathMapEntry string) ([]*PathMapEntry, error) {
+
+	entries := make([]*PathMapEntry, 0)
 
 	// find source and target path matching in the supplied map entry
 	matches := PathMapEntryPattern.FindStringSubmatch(dotmanPathMapEntry)
 	if len(matches) < 3 {
-		return PathMapEntry{}, fmt.Errorf("%q is not a valid path map entry.", dotmanPathMapEntry)
+		return entries, fmt.Errorf("%q is not a valid path map entry.", dotmanPathMapEntry)
 	}
 
-	// parse the source path
-	sourcePathText := strings.TrimSpace(matches[1])
-	sourcePath, err := newSourcePath(baseDirectory, sourcePathText)
+	sourcePathText := normalizePathSpecification(matches[1])
+	targetPathText := normalizePathSpecification(matches[2])
+
+	// prepare the source path
+	sourcePath := filepath.Join(baseDirectory, sourcePathText)
+
+	// prepare the target path
+	targetPath := expandPathVariables(targetPathText)
+
+	// glob pattern matching
+	matches, err := filepath.Glob(sourcePath)
 	if err != nil {
-		return PathMapEntry{}, fmt.Errorf("%s", err)
+		return entries, err
 	}
 
-	// parse the target path
-	targetPathText := strings.TrimSpace(matches[2])
-	targetPath, err := newTargetPath(targetPathText)
-	if err != nil {
-		return PathMapEntry{}, fmt.Errorf("%s", err)
+	for _, sourcePath := range matches {
+
+		// determine the target path
+		sourceEntryName := filepath.Base(sourcePath)
+		targetPath := filepath.Join(targetPath, sourceEntryName)
+
+		// add a new path map entry
+		entries = append(entries, &PathMapEntry{
+			Source: sourcePath,
+			Target: targetPath,
+		})
 	}
 
-	return PathMapEntry{
-		Source: sourcePath,
-		Target: targetPath,
-	}, nil
+	return entries, nil
 }
 
 type PathMapEntry struct {
-	Source *SourcePath
-	Target *TargetPath
+	Source string
+	Target string
 }
 
 func (pathMapEntry *PathMapEntry) String() string {
-	return fmt.Sprintf("%s → %s\n", pathMapEntry.Source.Path(), pathMapEntry.Target.Path())
+	return fmt.Sprintf("%s → %s\n", pathMapEntry.Source, pathMapEntry.Target)
 }
