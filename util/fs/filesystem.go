@@ -174,7 +174,7 @@ func FileExists(path string) bool {
 	}
 
 	file, err := os.Stat(path)
-	if err != nil && os.IsNotExist(err) {
+	if err != nil {
 		return false
 	}
 
@@ -187,7 +187,7 @@ func DirectoryExists(path string) bool {
 	}
 
 	file, err := os.Stat(path)
-	if err != nil && os.IsNotExist(err) {
+	if err != nil {
 		return false
 	}
 
