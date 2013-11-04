@@ -6,6 +6,7 @@ package actions
 
 import (
 	"github.com/andreaskoch/dotman/actions/backup"
+	"github.com/andreaskoch/dotman/actions/changes"
 	"github.com/andreaskoch/dotman/actions/deploy"
 	"github.com/andreaskoch/dotman/actions/importer"
 	"github.com/andreaskoch/dotman/actions/list"
@@ -25,6 +26,7 @@ func init() {
 		NewActionInfo(importer.ActionName, importer.ActionDescription),
 		NewActionInfo(backup.ActionName, backup.ActionDescription),
 		NewActionInfo(deploy.ActionName, deploy.ActionDescription),
+		NewActionInfo(changes.ActionName, changes.ActionDescription),
 	}
 }
 
@@ -49,6 +51,9 @@ func Get(workingDirectory string, actionName string) Action {
 
 	case deploy.ActionName:
 		return deploy.New(projectsProvider)
+
+	case changes.ActionName:
+		return changes.New(projectsProvider)
 
 	default:
 		return nil // no matching found

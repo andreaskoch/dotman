@@ -6,6 +6,8 @@ package fs
 
 import (
 	"bufio"
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -263,4 +265,22 @@ func getAllDirectoryEntries(path string, recurse bool, includeDirectoryEntry fun
 	}
 
 	return files
+}
+
+func GetFileHash(file string) (string, error) {
+
+	if !IsFile(file) {
+		return "", fmt.Errorf("%q is not a file.", file)
+	}
+
+	itemBytes, readFileErr := ioutil.ReadFile(file)
+	if readFileErr != nil {
+		return "", fmt.Errorf("Unable to read file %q.", file)
+	}
+
+	sha1Hash := sha1.New()
+	sha1Hash.Write(itemBytes)
+	hashBytes := sha1Hash.Sum(nil)
+
+	return string(hex.EncodeToString(hashBytes)), nil
 }
