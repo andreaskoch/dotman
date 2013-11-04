@@ -16,7 +16,7 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 
 	// check if the source file exists
 	if !fs.IsFile(sourceFile) {
-		return nil, fmt.Errorf("Cannot create a path map because the specified dotfile %q does not exist", sourceFile)
+		return nil, fmt.Errorf("Cannot create a path map because the specified dotfile %q does not exist.", sourceFile)
 	}
 
 	// open the dotman file
@@ -28,7 +28,7 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 	// determine the path map directory
 	directory := filepath.Dir(sourceFile)
 
-	pathMapEntries := make([]*PathMapEntry, 0)
+	pathMapEntries := make([]*pathMapEntry, 0)
 
 	// read in the lines of the dotman file and create path map entries from it
 	lines := fs.GetLines(file)
@@ -51,22 +51,41 @@ func NewPathMap(sourceFile string) (*PathMap, error) {
 	}
 
 	return &PathMap{
-		Directory: directory,
-		Entries:   pathMapEntries,
+		directory: directory,
+		entries:   pathMapEntries,
 	}, nil
 }
 
 type PathMap struct {
-	Directory string
-	Entries   []*PathMapEntry
+	directory string
+	entries   []*pathMapEntry
+
+	isReversed bool
 }
 
-func (pathMap *PathMap) String() string {
-	text := ""
+func (pathMap *PathMap) IsReversed() bool {
+	return pathMap.isReversed
+}
 
-	for _, entry := range pathMap.Entries {
-		text += fmt.Sprintf("%s", entry.String())
+// Reverse the source and target path of all entries in this map
+func (pathMap *PathMap) Reverse() *PathMap {
+	for _, entry := range pathMap.entries {
+		entry.Reverse()
 	}
 
-	return text
+	pathMap.isReversed = !pathMap.isReversed
+
+	return pathMap
+}
+
+func (pathMap *PathMap) GetInstructions() []*Instruction {
+
+	instructions := make([]*Instruction, 0)
+
+	// get the instructions for all entries
+	for _, entry := range pathMap.entries {
+		instructions = append(instructions, entry.GetInstructions()...)
+	}
+
+	return instructions
 }

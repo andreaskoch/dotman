@@ -61,9 +61,9 @@ func (backup *Backup) execute(executeADryRunOnly bool, arguments []string) {
 		files = append(files, project.ProjectFile())
 
 		// add all target files
-		for _, entry := range project.Map.Entries {
+		for _, instruction := range project.Map.GetInstructions() {
 
-			targetPath := entry.Target
+			targetPath := instruction.Target()
 			if !fs.IsDirectory(targetPath) {
 				files = append(files, targetPath)
 				continue

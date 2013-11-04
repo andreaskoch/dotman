@@ -31,11 +31,12 @@ func New(projectCollectionProvider base.ProjectsProviderFunc) *Deploy {
 
 func deployProject(project *projects.Project, executeADryRunOnly bool) {
 
-	for _, entry := range project.Map.Entries {
-		source := entry.Source
-		target := entry.Target
+	for _, instruction := range project.Map.GetInstructions() {
 
-		ui.Message("Copy: %s → %s", source, target)
+		source := instruction.Source()
+		target := instruction.Target()
+
+		ui.Message("Copy %s → %s", source, target)
 		if !executeADryRunOnly {
 			if _, err := fs.Copy(source, target); err != nil {
 				ui.Message("%s", err)

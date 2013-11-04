@@ -9,8 +9,6 @@ import (
 	"github.com/andreaskoch/dotman/projects"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
-	"path/filepath"
-	"regexp"
 )
 
 const (
@@ -33,42 +31,16 @@ func New(projectCollectionProvider base.ProjectsProviderFunc) *Importer {
 
 func importProject(project *projects.Project, executeADryRunOnly bool) {
 
-	// build the copy-map
-	for _, pathMapEntry := range project.Map.Entries {
+	for _, instruction := range project.Map.Reverse().GetInstructions() {
 
-		source := pathMapEntry.Target
-		target := pathMapEntry.Source
-		patternText := pathMapEntry.Pattern
+		source := instruction.Source()
+		target := instruction.Target()
 
-		// copy one or more files
-		if patternText != "" {
-
-			pattern, err := regexp.Compile(patternText)
-			if err != nil {
-				ui.Fatal("%s", err)
+		ui.Message("Copy %s → %s", source, target)
+		if !executeADryRunOnly {
+			if _, err := fs.Copy(source, target); err != nil {
+				ui.Message("%s", err)
 			}
-
-			sourceEntries := fs.GetMatchingDirectoryEntries(source, pattern)
-			for _, sourceEntry := range sourceEntries {
-				sourceEntryName := filepath.Base(sourceEntry)
-				targetEntry := filepath.Join(target, sourceEntryName)
-				copy(sourceEntry, targetEntry, executeADryRunOnly)
-			}
-
-			continue
-
-		}
-
-		// copy a single file or folder
-		copy(source, target, executeADryRunOnly)
-	}
-}
-
-func copy(source, target string, executeADryRunOnly bool) {
-	ui.Message("Copy %s → %s", source, target)
-	if !executeADryRunOnly {
-		if _, err := fs.Copy(source, target); err != nil {
-			ui.Message("%s", err)
 		}
 	}
 }
