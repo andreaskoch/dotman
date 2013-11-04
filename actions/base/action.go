@@ -11,19 +11,23 @@ import (
 	"strings"
 )
 
+type ForEachProjectFunc func(project *projects.Project, executeADryRunOnly bool)
+
+type ProjectsProviderFunc func() *projects.Collection
+
 type Action struct {
 	name                      string
 	description               string
-	projectCollectionProvider func() *projects.Collection
-	executeFunc               func(project *projects.Project, executeADryRunOnly bool)
+	projectCollectionProvider ProjectsProviderFunc
+	forEachProject            ForEachProjectFunc
 }
 
-func New(name, description string, projectCollectionProvider func() *projects.Collection, executeFunc func(project *projects.Project, executeADryRunOnly bool)) *Action {
+func New(name, description string, projectCollectionProvider ProjectsProviderFunc, forEachProject ForEachProjectFunc) *Action {
 	return &Action{
 		name:                      name,
 		description:               description,
 		projectCollectionProvider: projectCollectionProvider,
-		executeFunc:               executeFunc,
+		forEachProject:            forEachProject,
 	}
 }
 
@@ -70,7 +74,7 @@ func (action *Action) execute(executeADryRunOnly bool, arguments []string) {
 			continue
 		}
 
-		action.executeFunc(project, executeADryRunOnly)
+		action.forEachProject(project, executeADryRunOnly)
 	}
 
 }

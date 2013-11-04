@@ -22,7 +22,7 @@ type Importer struct {
 	*base.Action
 }
 
-func New(projectCollectionProvider func() *projects.Collection) *Importer {
+func New(projectCollectionProvider base.ProjectsProviderFunc) *Importer {
 	return &Importer{
 		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
 			ui.Message("\nImporting %q:", project)

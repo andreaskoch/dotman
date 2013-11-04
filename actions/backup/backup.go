@@ -8,7 +8,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"fmt"
-	"github.com/andreaskoch/dotman/projects"
+	"github.com/andreaskoch/dotman/actions/base"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
 	"io"
@@ -24,10 +24,10 @@ const (
 )
 
 type Backup struct {
-	projectCollectionProvider func() *projects.Collection
+	projectCollectionProvider base.ProjectsProviderFunc
 }
 
-func New(projectCollectionProvider func() *projects.Collection) *Backup {
+func New(projectCollectionProvider base.ProjectsProviderFunc) *Backup {
 	return &Backup{
 		projectCollectionProvider: projectCollectionProvider,
 	}

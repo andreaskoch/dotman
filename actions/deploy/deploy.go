@@ -20,7 +20,7 @@ type Deploy struct {
 	*base.Action
 }
 
-func New(projectCollectionProvider func() *projects.Collection) *Deploy {
+func New(projectCollectionProvider base.ProjectsProviderFunc) *Deploy {
 	return &Deploy{
 		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
 			ui.Message("Deploying %q", project)

@@ -19,7 +19,7 @@ type List struct {
 	*base.Action
 }
 
-func New(projectCollectionProvider func() *projects.Collection) *List {
+func New(projectCollectionProvider base.ProjectsProviderFunc) *List {
 	return &List{
 		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
 			ui.Message("%s", project)
