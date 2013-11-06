@@ -1,3 +1,101 @@
 # dotman
 
 dotman is a tool to bootstrap your system configuration files.
+
+## Motivation
+
+Get up and running within seconds on a new system with all your favorite vim plugins, bash-scripts and tweaks that make you at home and productive.
+
+dotman is inspired by [modman](https://github.com/colinmollenhour/modman) and allows you to easily manage your dotfile repositories.
+
+Create a git repository which contains all your dotfiles such as your bash and vim configuration (e.g. [dotfiles-public](https://bitbucket.org/andreaskoch/dotfiles-public)):
+
+	dotfiles-public/
+	├── bash
+	│   ├── bash-git-prompt
+	│   │   ├── gitprompt.fish
+	│   │   ├── gitprompt.png
+	│   │   ├── gitprompt.sh
+	│   │   ├── gitstatus.py
+	│   │   └── README.md
+	│   ├── bashrc
+	│   ├── dotman
+	│   └── scripts
+	│       ├── contribue-source-to-target.sh
+	│       ├── public-ip.sh
+	│       ├── synchronize-source-to-target.sh
+	│       └── vim-setup.sh
+	└── vim
+	    ├── dotman
+	    ├── fontconfig
+	    │   └── 10-powerline-symbols.conf
+	    ├── fonts
+	    │   └── PowerlineSymbols.otf
+	    ├── vim
+	    │   ├── autoload
+	    │   └── bundle
+	    └── vimrc
+
+Add submodules from awesome modules such as [bash-git-prompt](https://github.com/magicmonty/bash-git-prompt) and then create a **dotman** mapping file for each subproject which tells dotman where to copy the files.
+
+Take the `dotman` mapping for the vim-files listed above as an example:
+
+	vimrc                                   ~/.vimrc
+	vim/autoload                            ~/.vim/autoload
+	vim/bundle                              ~/.vim/bundle
+
+	#powerline fonts
+	fonts/PowerlineSymbols.otf              ~/.fonts/PowerlineSymbols.otf
+	fontconfig/10-powerline-symbols.conf    ~/.config/fontconfig/conf.d/10-powerline-symbols.conf
+
+The file maps files and directories from your vim settings-repository directly into your home-directory.
+
+## Terminology
+
+### "Project"
+
+A dotman **project** is a folder which contains a plain-text file named `dotman`.
+
+### "Repository"
+
+A **repository** is a collection of one or more projects. You can have only one project which contains all your dotfiles, but sometimes things get a little less messy when you seperate your dotfiles into more separate projects. Examples:
+
+- git-configs
+- vim
+- bash
+- ...
+
+## Usage
+
+	dotman <command>
+
+## Getting help
+
+If supply the `help` command to dotman (or any unknown command for that matter) it will print out the help dialog:
+
+```bash
+dotman help
+```
+
+	Backup and bootstrap your dotfiles and system configuration.
+
+	usage: [-whatif] dotman <command> [args]
+
+	Available commands are:
+	    list      Get a list of all projects in the current dotfile collection.
+	    import    Import files based on your current dotman configurations.
+	    backup    Backup your target files.
+	    deploy    Deploy your projects.
+	    changes   Show changed files.
+
+	Options:
+	    whatif    Enable the dry-run mode. Nothing is changed. Only print out what would happen.
+
+## List of all projects
+
+To get a list of all dotman-projects in the current directory use the `list` command.
+
+```bash
+dotman list
+```
+
