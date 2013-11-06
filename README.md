@@ -2,6 +2,10 @@
 
 dotman is a tool to bootstrap your system configuration files.
 
+## Build Status
+
+[![Build Status](https://travis-ci.org/andreaskoch/dotman.png)](https://travis-ci.org/andreaskoch/dotman)
+
 ## Motivation
 
 Get up and running within seconds on a new system with all your favorite vim plugins, bash-scripts and tweaks that make you at home and productive.
