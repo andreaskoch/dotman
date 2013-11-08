@@ -88,7 +88,7 @@ func getApplicationName() string {
 
 var usage = func() {
 	// description
-	ui.Message("Backup and bootstrap your dotfiles and system configuration.")
+	ui.Message("v%s - Backup and bootstrap your dotfiles and system configuration.", VERSION)
 	ui.Message("")
 
 	// usage
