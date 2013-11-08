@@ -56,21 +56,7 @@ func showChanges(project *projects.Project) (changes chan string) {
 				continue // skip directories for now
 			}
 
-			// determine the hash of the source file
-			sourceHash, sourceHashErr := fs.GetFileHash(source)
-			if sourceHashErr != nil {
-				changes <- fmt.Sprintf("Unable to determine the hash of %q.", sourceHashErr)
-				continue
-			}
-
-			// determine the hash of the target file
-			targetHash, targetHashErr := fs.GetFileHash(target)
-			if targetHashErr != nil {
-				changes <- fmt.Sprintf("Unable to determine the hash of %q.", sourceHashErr)
-				continue
-			}
-
-			if sourceHash != targetHash {
+			if !filesAreEqual(source, target) {
 				changes <- fmt.Sprintf("%s.", target)
 			}
 		}
@@ -79,4 +65,21 @@ func showChanges(project *projects.Project) (changes chan string) {
 	}()
 
 	return changes
+}
+
+func filesAreEqual(source, target string) bool {
+
+	// determine the hash of the source file
+	sourceHash, sourceHashErr := fs.GetFileHash(source)
+	if sourceHashErr != nil {
+		ui.Fatal("%s", sourceHashErr)
+	}
+
+	// determine the hash of the target file
+	targetHash, targetHashErr := fs.GetFileHash(target)
+	if targetHashErr != nil {
+		ui.Fatal("%s", targetHashErr)
+	}
+
+	return sourceHash == targetHash
 }
