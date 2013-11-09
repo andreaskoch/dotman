@@ -10,7 +10,7 @@ import (
 	"github.com/andreaskoch/dotman/actions/deploy"
 	"github.com/andreaskoch/dotman/actions/importer"
 	"github.com/andreaskoch/dotman/actions/list"
-	"github.com/andreaskoch/dotman/projects"
+	"github.com/andreaskoch/dotman/modules"
 	"github.com/andreaskoch/dotman/ui"
 )
 
@@ -32,28 +32,28 @@ func init() {
 
 func Get(workingDirectory string, actionName string) Action {
 
-	// create a projects provider for the supplied working directory
-	projectsProvider := func() *projects.Collection {
-		return getProjectCollection(workingDirectory)
+	// create a modules provider for the supplied working directory
+	modulesProvider := func() *modules.Collection {
+		return getModuleCollection(workingDirectory)
 	}
 
 	// detect which action is requested
 	switch actionName {
 
 	case list.ActionName:
-		return list.New(projectsProvider)
+		return list.New(modulesProvider)
 
 	case importer.ActionName:
-		return importer.New(projectsProvider)
+		return importer.New(modulesProvider)
 
 	case backup.ActionName:
-		return backup.New(projectsProvider)
+		return backup.New(modulesProvider)
 
 	case deploy.ActionName:
-		return deploy.New(projectsProvider)
+		return deploy.New(modulesProvider)
 
 	case changes.ActionName:
-		return changes.New(projectsProvider)
+		return changes.New(modulesProvider)
 
 	default:
 		return nil // no matching found
@@ -67,11 +67,11 @@ func GetAll() []ActionMetaData {
 	return availableActions
 }
 
-func getProjectCollection(workingDirectory string) *projects.Collection {
-	projectCollection, err := projects.Load(workingDirectory)
+func getModuleCollection(workingDirectory string) *modules.Collection {
+	moduleCollection, err := modules.Load(workingDirectory)
 	if err != nil {
-		ui.Fatal("Unable to load projects. %s", err)
+		ui.Fatal("Unable to load modules. %s", err)
 	}
 
-	return projectCollection
+	return moduleCollection
 }

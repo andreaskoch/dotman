@@ -24,12 +24,12 @@ const (
 )
 
 type Backup struct {
-	projectCollectionProvider base.ProjectsProviderFunc
+	moduleCollectionProvider base.ModulesProviderFunc
 }
 
-func New(projectCollectionProvider base.ProjectsProviderFunc) *Backup {
+func New(moduleCollectionProvider base.ModulesProviderFunc) *Backup {
 	return &Backup{
-		projectCollectionProvider: projectCollectionProvider,
+		moduleCollectionProvider: moduleCollectionProvider,
 	}
 }
 
@@ -51,17 +51,17 @@ func (backup *Backup) DryRun(arguments []string) {
 
 func (backup *Backup) execute(executeADryRunOnly bool, arguments []string) {
 
-	projects := backup.projectCollectionProvider()
+	modules := backup.moduleCollectionProvider()
 
 	// assemble a list of all files to backup
 	files := make([]string, 0)
-	for _, project := range projects.Collection {
+	for _, module := range modules.Collection {
 
-		// add the project file
-		files = append(files, project.ProjectFile())
+		// add the module file
+		files = append(files, module.ModuleFile())
 
 		// add all target files
-		for _, instruction := range project.Map.GetInstructions() {
+		for _, instruction := range module.Map.GetInstructions() {
 
 			targetPath := instruction.Target()
 			if !fs.IsDirectory(targetPath) {
@@ -76,7 +76,7 @@ func (backup *Backup) execute(executeADryRunOnly bool, arguments []string) {
 	}
 
 	// make sure the archive directory exists
-	archiveDirectory := filepath.Join(projects.BaseDirectory, BackupDirectoryName)
+	archiveDirectory := filepath.Join(modules.BaseDirectory, BackupDirectoryName)
 	if !fs.DirectoryExists(archiveDirectory) {
 		ui.Message("Creating backup directory %q.", archiveDirectory)
 		if !executeADryRunOnly && !fs.CreateDirectory(archiveDirectory) {

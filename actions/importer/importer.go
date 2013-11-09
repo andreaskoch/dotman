@@ -6,7 +6,7 @@ package importer
 
 import (
 	"github.com/andreaskoch/dotman/actions/base"
-	"github.com/andreaskoch/dotman/projects"
+	"github.com/andreaskoch/dotman/modules"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
 )
@@ -20,18 +20,18 @@ type Importer struct {
 	*base.Action
 }
 
-func New(projectCollectionProvider base.ProjectsProviderFunc) *Importer {
+func New(moduleCollectionProvider base.ModulesProviderFunc) *Importer {
 	return &Importer{
-		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
-			ui.Message("\nImporting %q:", project)
-			importProject(project, executeADryRunOnly)
+		base.New(ActionName, ActionDescription, moduleCollectionProvider, func(module *modules.Module, executeADryRunOnly bool) {
+			ui.Message("\nImporting %q:", module)
+			importModule(module, executeADryRunOnly)
 		}),
 	}
 }
 
-func importProject(project *projects.Project, executeADryRunOnly bool) {
+func importModule(module *modules.Module, executeADryRunOnly bool) {
 
-	for _, instruction := range project.Map.Reverse().GetInstructions() {
+	for _, instruction := range module.Map.Reverse().GetInstructions() {
 
 		source := instruction.Source()
 		target := instruction.Target()

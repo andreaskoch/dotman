@@ -6,23 +6,23 @@ package list
 
 import (
 	"github.com/andreaskoch/dotman/actions/base"
-	"github.com/andreaskoch/dotman/projects"
+	"github.com/andreaskoch/dotman/modules"
 	"github.com/andreaskoch/dotman/ui"
 )
 
 const (
 	ActionName        = "list"
-	ActionDescription = "Get a list of all projects in the current dotfile collection."
+	ActionDescription = "Get a list of all modules in the current dotfile collection."
 )
 
 type List struct {
 	*base.Action
 }
 
-func New(projectCollectionProvider base.ProjectsProviderFunc) *List {
+func New(moduleCollectionProvider base.ModulesProviderFunc) *List {
 	return &List{
-		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
-			ui.Message("%s", project)
+		base.New(ActionName, ActionDescription, moduleCollectionProvider, func(module *modules.Module, executeADryRunOnly bool) {
+			ui.Message("%s", module)
 		}),
 	}
 }

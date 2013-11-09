@@ -7,7 +7,7 @@ package changes
 import (
 	"fmt"
 	"github.com/andreaskoch/dotman/actions/base"
-	"github.com/andreaskoch/dotman/projects"
+	"github.com/andreaskoch/dotman/modules"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
 )
@@ -21,17 +21,17 @@ type Importer struct {
 	*base.Action
 }
 
-func New(projectCollectionProvider base.ProjectsProviderFunc) *Importer {
+func New(moduleCollectionProvider base.ModulesProviderFunc) *Importer {
 	return &Importer{
-		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
+		base.New(ActionName, ActionDescription, moduleCollectionProvider, func(module *modules.Module, executeADryRunOnly bool) {
 
-			projectTitleHasBeenPrinted := false
-			for change := range showChanges(project) {
+			moduleTitleHasBeenPrinted := false
+			for change := range showChanges(module) {
 
-				// print project title
-				if !projectTitleHasBeenPrinted {
-					ui.Message("\n%s:", project)
-					projectTitleHasBeenPrinted = true
+				// print module title
+				if !moduleTitleHasBeenPrinted {
+					ui.Message("\n%s:", module)
+					moduleTitleHasBeenPrinted = true
 				}
 
 				// report the change
@@ -42,12 +42,12 @@ func New(projectCollectionProvider base.ProjectsProviderFunc) *Importer {
 	}
 }
 
-func showChanges(project *projects.Project) (changes chan string) {
+func showChanges(module *modules.Module) (changes chan string) {
 
 	changes = make(chan string, 10)
 
 	go func() {
-		for _, instruction := range project.Map.GetInstructions() {
+		for _, instruction := range module.Map.GetInstructions() {
 
 			source := instruction.Source()
 			target := instruction.Target()

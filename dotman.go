@@ -24,9 +24,9 @@ var (
 	whatIfFlagName        = "whatif"
 	whatIfFlagDescription = "Enable the dry-run mode. Only print out what would happen."
 
-	// project filter argument
-	projectFilterExpressionName        = "filter"
-	projectFilterExpressionDescription = "You can add a project filter expression to all commands."
+	// module filter argument
+	moduleFilterExpressionName        = "filter"
+	moduleFilterExpressionDescription = "You can add a module filter expression to all commands."
 )
 
 func init() {
@@ -114,7 +114,7 @@ var usage = func() {
 	// args
 	ui.Message("")
 	ui.Message("Arguments:")
-	ui.Message("    %s %s  %s", projectFilterExpressionName, getActionSpacer(projectFilterExpressionName), projectFilterExpressionDescription)
+	ui.Message("    %s %s  %s", moduleFilterExpressionName, getActionSpacer(moduleFilterExpressionName), moduleFilterExpressionDescription)
 
 	// source code
 	ui.Message("")

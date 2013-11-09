@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package projects
+package modules
 
 import (
 	"fmt"
@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	ProjectFileName = "dotman"
+	ModuleFileName = "dotman"
 )
 
 type Collection struct {
 	BaseDirectory string
-	Collection    []*Project
+	Collection    []*Module
 }
 
 func Load(directory string) (*Collection, error) {
@@ -26,33 +26,33 @@ func Load(directory string) (*Collection, error) {
 		return nil, fmt.Errorf("The directory %q does not exist.", directory)
 	}
 
-	// find all folders with project files in them (non-recursive)
-	projectDirectories, err := getAllProjectDirectories(directory, ProjectFileName)
+	// find all folders with module files in them (non-recursive)
+	moduleDirectories, err := getAllModuleDirectories(directory, ModuleFileName)
 	if err != nil {
-		return nil, fmt.Errorf("Unable scan the directory %q for projects. Error: %s", directory, err)
+		return nil, fmt.Errorf("Unable scan the directory %q for modules. Error: %s", directory, err)
 	}
 
-	// try to create projects from each project directory
-	projects := make([]*Project, 0)
+	// try to create modules from each module directory
+	modules := make([]*Module, 0)
 	errors := make([]string, 0)
-	for _, projectDirectory := range projectDirectories {
+	for _, moduleDirectory := range moduleDirectories {
 
-		project, err := newProject(projectDirectory, ProjectFileName)
+		module, err := newModule(moduleDirectory, ModuleFileName)
 		if err != nil {
 			errors = append(errors, err.Error())
 			continue
 		}
 
-		projects = append(projects, project)
+		modules = append(modules, module)
 	}
 
-	// create the project collection
+	// create the module collection
 	collection := &Collection{
 		BaseDirectory: directory,
-		Collection:    projects,
+		Collection:    modules,
 	}
 
-	// partial success (not all projects could be read)
+	// partial success (not all modules could be read)
 	if len(errors) > 0 {
 		return collection, fmt.Errorf("%s", strings.Join(errors, ",\n"))
 	}

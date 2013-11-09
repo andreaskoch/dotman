@@ -6,32 +6,32 @@ package deploy
 
 import (
 	"github.com/andreaskoch/dotman/actions/base"
-	"github.com/andreaskoch/dotman/projects"
+	"github.com/andreaskoch/dotman/modules"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/fs"
 )
 
 const (
 	ActionName        = "deploy"
-	ActionDescription = "Deploy your projects."
+	ActionDescription = "Deploy your modules."
 )
 
 type Deploy struct {
 	*base.Action
 }
 
-func New(projectCollectionProvider base.ProjectsProviderFunc) *Deploy {
+func New(moduleCollectionProvider base.ModulesProviderFunc) *Deploy {
 	return &Deploy{
-		base.New(ActionName, ActionDescription, projectCollectionProvider, func(project *projects.Project, executeADryRunOnly bool) {
-			ui.Message("Deploying %q", project)
-			deployProject(project, executeADryRunOnly)
+		base.New(ActionName, ActionDescription, moduleCollectionProvider, func(module *modules.Module, executeADryRunOnly bool) {
+			ui.Message("Deploying %q", module)
+			deployModule(module, executeADryRunOnly)
 		}),
 	}
 }
 
-func deployProject(project *projects.Project, executeADryRunOnly bool) {
+func deployModule(module *modules.Module, executeADryRunOnly bool) {
 
-	for _, instruction := range project.Map.GetInstructions() {
+	for _, instruction := range module.Map.GetInstructions() {
 
 		source := instruction.Source()
 		target := instruction.Target()

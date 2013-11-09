@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package projects
+package modules
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-func getAllProjectDirectories(baseDirectory, projectFileName string) ([]string, error) {
+func getAllModuleDirectories(baseDirectory, moduleFileName string) ([]string, error) {
 
 	baseDirectoryEntries, err := ioutil.ReadDir(baseDirectory)
 	if err != nil {
@@ -19,26 +19,26 @@ func getAllProjectDirectories(baseDirectory, projectFileName string) ([]string, 
 	}
 
 	// get al list of all directories (including the base directory)
-	projectDirectories := make([]string, 0)
+	moduleDirectories := make([]string, 0)
 	for _, entry := range baseDirectoryEntries {
 
 		// check the directory
 		if entry.IsDir() {
 			subDirectoryPath := filepath.Join(baseDirectory, entry.Name())
-			projectFilePath := filepath.Join(subDirectoryPath, projectFileName)
+			moduleFilePath := filepath.Join(subDirectoryPath, moduleFileName)
 
-			// add the directory if it contains a project file
-			if fs.FileExists(projectFilePath) {
-				projectDirectories = append(projectDirectories, subDirectoryPath)
+			// add the directory if it contains a module file
+			if fs.FileExists(moduleFilePath) {
+				moduleDirectories = append(moduleDirectories, subDirectoryPath)
 			}
 		}
 
 		// add the base directory if it contains a projct file
-		if entry.Name() == projectFileName {
-			projectDirectories = append(projectDirectories, baseDirectory)
+		if entry.Name() == moduleFileName {
+			moduleDirectories = append(moduleDirectories, baseDirectory)
 		}
 
 	}
 
-	return projectDirectories, nil
+	return moduleDirectories, nil
 }

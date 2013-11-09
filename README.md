@@ -40,7 +40,7 @@ Create a git repository which contains all your dotfiles such as your bash and v
 	    │   └── bundle
 	    └── vimrc
 
-Add submodules from awesome modules such as [bash-git-prompt](https://github.com/magicmonty/bash-git-prompt) and then create a **dotman** mapping file for each subproject which tells dotman where to copy the files.
+Add submodules from awesome modules such as [bash-git-prompt](https://github.com/magicmonty/bash-git-prompt) and then create a **dotman** mapping file for each submodule which tells dotman where to copy the files.
 
 Take the `dotman` mapping for the vim-files listed above as an example:
 
@@ -56,13 +56,13 @@ The file maps files and directories from your vim settings-repository directly i
 
 ## Terminology
 
-### "Project"
+### "Module"
 
-A dotman **project** is a folder which contains a plain-text file named `dotman`.
+A dotman **module** is a folder which contains a plain-text file named `dotman`.
 
 ### "Repository"
 
-A **repository** is a collection of one or more projects. You can have only one project which contains all your dotfiles, but sometimes things get a little less messy when you seperate your dotfiles into more separate projects. Examples:
+A **repository** is a collection of one or more modules. You can have only one module which contains all your dotfiles, but sometimes things get a little less messy when you seperate your dotfiles into more separate modules. Examples:
 
 - git-configs
 - vim
@@ -86,23 +86,23 @@ dotman help
 	usage: [-whatif] dotman <command> [args]
 
 	Available commands are:
-	    list      Get a list of all projects in the current dotfile collection.
+	    list      Get a list of all modules in the current dotfile collection.
 	    import    Import files based on your current dotman configurations.
 	    backup    Backup your target files.
-	    deploy    Deploy your projects.
+	    deploy    Deploy your modules.
 	    changes   Show changed files.
 
 	Options:
 	    whatif    Enable the dry-run mode. Only print out what would happen.
 
 	Arguments:
-	    filter    You can add a project filter expression to all commands.
+	    filter    You can add a module filter expression to all commands.
 
 	Contribute: https://github.com/andreaskoch/dotman
 
-## List of all projects
+## List of all modules
 
-To get a list of all dotman-projects in the current directory use the `list` command.
+To get a list of all dotman-modules in the current directory use the `list` command.
 
 ```bash
 dotman list
