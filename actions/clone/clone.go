@@ -56,5 +56,7 @@ func (clone *Clone) execute(executeADryRunOnly bool, arguments []string) {
 	}
 
 	ui.Message("Cloning dotfile repository %q into %q.", repositoryUrl, clone.baseDirectory)
-	command.Execute(clone.baseDirectory, fmt.Sprintf("git clone --recursive %s", repositoryUrl))
+	if !executeADryRunOnly {
+		command.Execute(clone.baseDirectory, fmt.Sprintf("git clone --recursive %s", repositoryUrl))
+	}
 }
