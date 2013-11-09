@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	VERSION = "0.1.0"
+	VERSION       = "0.1.0"
+	REPOSITORYURL = "https://github.com/andreaskoch/dotman"
 )
 
 var (
@@ -105,6 +106,10 @@ var usage = func() {
 	ui.Message("")
 	ui.Message("Options:")
 	ui.Message("    %s %s  %s", whatIfFlagName, getActionSpacer(whatIfFlagName), whatIfFlagDescription)
+
+	// source code
+	ui.Message("")
+	ui.Message("Contribute: %s", REPOSITORYURL)
 }
 
 func getActionSpacer(action string) string {
