@@ -81,7 +81,7 @@ If supply the `help` command to dotman (or any unknown command for that matter) 
 dotman help
 ```
 
-	Backup and bootstrap your dotfiles and system configuration.
+	v0.1.0 - Backup and bootstrap your dotfiles and system configuration.
 
 	usage: [-whatif] dotman <command> [args]
 
@@ -93,7 +93,12 @@ dotman help
 	    changes   Show changed files.
 
 	Options:
-	    whatif    Enable the dry-run mode. Nothing is changed. Only print out what would happen.
+	    whatif    Enable the dry-run mode. Only print out what would happen.
+
+	Arguments:
+	    filter    You can add a project filter expression to all commands.
+
+	Contribute: https://github.com/andreaskoch/dotman
 
 ## List of all projects
 

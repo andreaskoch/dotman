@@ -22,7 +22,11 @@ var (
 	// the what-if flag
 	whatIfFlag            = false
 	whatIfFlagName        = "whatif"
-	whatIfFlagDescription = "Enable the dry-run mode. Nothing is changed. Only print out what would happen."
+	whatIfFlagDescription = "Enable the dry-run mode. Only print out what would happen."
+
+	// project filter argument
+	projectFilterExpressionName        = "filter"
+	projectFilterExpressionDescription = "You can add a project filter expression to all commands."
 )
 
 func init() {
@@ -106,6 +110,11 @@ var usage = func() {
 	ui.Message("")
 	ui.Message("Options:")
 	ui.Message("    %s %s  %s", whatIfFlagName, getActionSpacer(whatIfFlagName), whatIfFlagDescription)
+
+	// args
+	ui.Message("")
+	ui.Message("Arguments:")
+	ui.Message("    %s %s  %s", projectFilterExpressionName, getActionSpacer(projectFilterExpressionName), projectFilterExpressionDescription)
 
 	// source code
 	ui.Message("")
