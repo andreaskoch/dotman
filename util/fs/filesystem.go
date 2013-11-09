@@ -241,6 +241,22 @@ func GetMatchingDirectoryEntries(path string, pattern *regexp.Regexp) []string {
 	})
 }
 
+func forEachDirectoryEntry(path string, expression func(file os.FileInfo) error) error {
+
+	directoryEntries, err := ioutil.ReadDir(path)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range directoryEntries {
+		if err := expression(entry); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func getAllDirectoryEntries(path string, recurse bool, includeDirectoryEntry func(file os.FileInfo) bool) []string {
 
 	files := make([]string, 0)
@@ -283,4 +299,67 @@ func GetFileHash(file string) (string, error) {
 	hashBytes := sha1Hash.Sum(nil)
 
 	return string(hex.EncodeToString(hashBytes)), nil
+}
+
+func DirectoriesAreEqual(source, target string) (directoriesAreEqual bool, filesThatAreDifferent []string, err error) {
+
+	filesThatAreDifferent = make([]string, 0)
+	err = forEachDirectoryEntry(source, func(file os.FileInfo) error {
+
+		subSource := filepath.Join(source, file.Name())
+		subTarget := filepath.Join(source, file.Name())
+
+		// check if the file is are directory
+		if file.IsDir() {
+
+			// recurse
+			directoriesAreEqual, changedFiles, subDirectoryError := DirectoriesAreEqual(subSource, subTarget)
+			if subDirectoryError != nil {
+				return subDirectoryError
+			}
+
+			// append the changed files
+			if !directoriesAreEqual {
+				filesThatAreDifferent = append(filesThatAreDifferent, changedFiles...)
+			}
+
+			return nil
+		}
+
+		// check if the source and target are different
+		sourceAndTargetAreEqual, err := FilesAreEqual(subSource, subTarget)
+		if err != nil {
+			return err
+		}
+
+		// if the files are different, add the target file to the list
+		if !sourceAndTargetAreEqual {
+			filesThatAreDifferent = append(filesThatAreDifferent, subTarget)
+		}
+
+		return nil
+	})
+
+	// if no files are different and no error occured the directories are alike
+	directoriesAreEqual = len(filesThatAreDifferent) == 0 && err == nil
+
+	return directoriesAreEqual, filesThatAreDifferent, err
+
+}
+
+func FilesAreEqual(source, target string) (bool, error) {
+
+	// determine the hash of the source file
+	sourceHash, sourceHashErr := GetFileHash(source)
+	if sourceHashErr != nil {
+		return false, sourceHashErr
+	}
+
+	// determine the hash of the target file
+	targetHash, targetHashErr := GetFileHash(target)
+	if targetHashErr != nil {
+		return false, sourceHashErr
+	}
+
+	return sourceHash == targetHash, nil
 }

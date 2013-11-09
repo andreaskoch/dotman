@@ -52,12 +52,32 @@ func showChanges(project *projects.Project) (changes chan string) {
 			source := instruction.Source()
 			target := instruction.Target()
 
+			// compare directories
 			if fs.IsDirectory(source) {
-				continue // skip directories for now
+
+				directoriesAreEqual, filesThatAreDifferent, err := fs.DirectoriesAreEqual(source, target)
+				if err != nil {
+					ui.Fatal("Error while comparing the directories %q and %q. Error: %s", source, target, err)
+				}
+
+				if !directoriesAreEqual {
+					for _, changedFile := range filesThatAreDifferent {
+						changes <- fmt.Sprintf("%s", changedFile)
+					}
+				}
+
+				// check next instruction
+				continue
 			}
 
-			if !filesAreEqual(source, target) {
-				changes <- fmt.Sprintf("%s.", target)
+			// compare files
+			areEqual, err := fs.FilesAreEqual(source, target)
+			if err != nil {
+				ui.Fatal("Error while comparing the files %q and %q. Error: %s", err)
+			}
+
+			if !areEqual {
+				changes <- fmt.Sprintf("%s", target)
 			}
 		}
 
@@ -65,21 +85,4 @@ func showChanges(project *projects.Project) (changes chan string) {
 	}()
 
 	return changes
-}
-
-func filesAreEqual(source, target string) bool {
-
-	// determine the hash of the source file
-	sourceHash, sourceHashErr := fs.GetFileHash(source)
-	if sourceHashErr != nil {
-		ui.Fatal("%s", sourceHashErr)
-	}
-
-	// determine the hash of the target file
-	targetHash, targetHashErr := fs.GetFileHash(target)
-	if targetHashErr != nil {
-		ui.Fatal("%s", targetHashErr)
-	}
-
-	return sourceHash == targetHash
 }
