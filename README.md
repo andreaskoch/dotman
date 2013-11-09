@@ -86,6 +86,7 @@ dotman help
 	usage: [-whatif] dotman <command> [args]
 
 	Available commands are:
+	    clone     Clone a dotfile repository.
 	    list      Get a list of all modules in the current repository.
 	    import    Import files based on your current dotman configurations.
 	    backup    Backup your target files.

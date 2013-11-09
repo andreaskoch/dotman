@@ -7,6 +7,7 @@ package actions
 import (
 	"github.com/andreaskoch/dotman/actions/backup"
 	"github.com/andreaskoch/dotman/actions/changes"
+	"github.com/andreaskoch/dotman/actions/clone"
 	"github.com/andreaskoch/dotman/actions/deploy"
 	"github.com/andreaskoch/dotman/actions/importer"
 	"github.com/andreaskoch/dotman/actions/list"
@@ -22,6 +23,7 @@ func init() {
 
 	// initialize the list of available actions
 	availableActions = []ActionMetaData{
+		NewActionInfo(clone.ActionName, clone.ActionDescription),
 		NewActionInfo(list.ActionName, list.ActionDescription),
 		NewActionInfo(importer.ActionName, importer.ActionDescription),
 		NewActionInfo(backup.ActionName, backup.ActionDescription),
@@ -39,6 +41,9 @@ func Get(workingDirectory string, actionName string) Action {
 
 	// detect which action is requested
 	switch actionName {
+
+	case clone.ActionName:
+		return clone.New(workingDirectory)
 
 	case list.ActionName:
 		return list.New(modulesProvider)
