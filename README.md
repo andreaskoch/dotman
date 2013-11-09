@@ -86,7 +86,7 @@ dotman help
 	usage: [-whatif] dotman <command> [args]
 
 	Available commands are:
-	    list      Get a list of all modules in the current dotfile collection.
+	    list      Get a list of all modules in the current repository.
 	    import    Import files based on your current dotman configurations.
 	    backup    Backup your target files.
 	    deploy    Deploy your modules.

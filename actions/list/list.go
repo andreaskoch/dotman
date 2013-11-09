@@ -12,7 +12,7 @@ import (
 
 const (
 	ActionName        = "list"
-	ActionDescription = "Get a list of all modules in the current dotfile collection."
+	ActionDescription = "Get a list of all modules in the current repository."
 )
 
 type List struct {
