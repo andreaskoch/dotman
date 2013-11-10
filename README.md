@@ -71,9 +71,31 @@ A **repository** is a collection of one or more modules. You can have only one m
 
 ## Usage
 
-	dotman <command>
+	dotman [-whatif] dotman <command> [args]
 
-## Getting help
+**The -whatif flag**
+
+If you want to **test** what a certain command you can preceed it with the `-whatif` flag.
+This will ensure that no files are modified or copied.
+
+Example:
+
+```bash
+dotman -whatif deploy
+```
+
+**Commands**
+
+These are the available commands:
+
+- **clone**: Clone a dotfile repository.
+- **list**: Get a list of all modules in the current repository.
+- **import**: Import files based on your current dotman configurations.
+- **backup**: Backup your target files.
+- **deploy**: Deploy your modules.
+- **changes**: Show changed files.
+
+### Getting help
 
 If supply the `help` command to dotman (or any unknown command for that matter) it will print out the help dialog:
 
@@ -83,7 +105,7 @@ dotman help
 
 	v0.1.0 - Backup and bootstrap your dotfiles and system configuration.
 
-	usage: [-whatif] dotman <command> [args]
+	usage: dotman [-whatif] <command> [<filter>]
 
 	Available commands are:
 	    clone     Clone a dotfile repository.
@@ -101,7 +123,17 @@ dotman help
 
 	Contribute: https://github.com/andreaskoch/dotman
 
-## List of all modules
+### Cloning a dotfile repository
+
+To clone an existing dotfile repository to your current working directory use the `clone` command.
+
+```bash
+dotman clone <repository-url>
+```
+
+This command will execute a `git clone --recursive` for the supplied repository url.
+
+### Getting a list of all modules in your current dotfile-repository
 
 To get a list of all dotman-modules in the current directory use the `list` command.
 
@@ -109,3 +141,73 @@ To get a list of all dotman-modules in the current directory use the `list` comm
 dotman list
 ```
 
+### Creating a dotfile-repository with "import"
+
+If you want to start a new dotfile-repository from scratch for example for your vim files you can follow these steps:
+
+#### 1. create a repository folder (e.g. "dotfiles")
+
+```bash
+mkdir -p ~/src/dotfiles/vim
+```
+
+#### 2. create a dotman file with mappings for your vim configuration
+
+```bash
+cat << EOF > ~/src/dotfiles/dotman
+# Your .vimrc file
+vimrc        		~/.vimrc
+
+# Your .vim folder
+vim/autoload        ~/.vim/autoload
+vim/bundle          ~/.vim/bundle
+EOF
+```
+
+#### 3. import the file into your repository
+
+```bash
+cd ~/src/dotfiles
+dotman import
+```
+
+This will copy your ".vimrc", and the ".vim/autoload" and ".vim/bundle" folder into your new dotfile-repository - which gives you a good starting point for refining your personal dotfile repository.
+
+### Backup your dotfiles
+
+To backup all files files that are mapped in your current dotfile-repository you can use the `backup` command.
+
+```bash
+dotman backup
+```
+
+This command will create a *.tar archive in the ".backup" folder of your dotfile-repository which contains all mapped target files. This an easy way to backup your system configuration.
+
+### Deploy your dotfile-repository
+
+The `deploy` comamnd will copy all mapped files from your dotfile-repository to the defined target locations.
+
+```bash
+dotman deploy
+```
+
+**Note**: If you are afraid what might happen when you execute this command you can add the `-whatif` flag. This way dotman will not copy any files but will show you what it would do:
+
+```bash
+dotman -whatif deploy
+```
+
+### Showing changed files
+
+To see which files have changed between your dotfile-repository and the target you can use the `changes` command.
+
+```bash
+dotman changes
+```
+
+This command will print out a list of all files that have changed, grouped by module.
+
+## Contribute
+
+If you have an idea how to make this tool better please send me a message or a pull request.
+All contributions are welcome.

@@ -97,7 +97,7 @@ var usage = func() {
 	ui.Message("")
 
 	// usage
-	ui.Message("usage: [-whatif] %s <command> [args]", getApplicationName())
+	ui.Message("usage: %s [-whatif] <command> [<filter>]", getApplicationName())
 	ui.Message("")
 
 	// commands
