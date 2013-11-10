@@ -12,6 +12,7 @@ import (
 	"github.com/andreaskoch/dotman/actions/deploy"
 	"github.com/andreaskoch/dotman/actions/importer"
 	"github.com/andreaskoch/dotman/actions/list"
+	"github.com/andreaskoch/dotman/actions/pull"
 	"github.com/andreaskoch/dotman/actions/push"
 	"github.com/andreaskoch/dotman/modules"
 	"github.com/andreaskoch/dotman/ui"
@@ -33,6 +34,7 @@ func init() {
 		NewActionInfo(deploy.ActionName, deploy.ActionDescription),
 		NewActionInfo(commit.ActionName, commit.ActionDescription),
 		NewActionInfo(push.ActionName, push.ActionDescription),
+		NewActionInfo(pull.ActionName, pull.ActionDescription),
 	}
 }
 
@@ -69,6 +71,9 @@ func Get(workingDirectory string, actionName string) Action {
 
 	case push.ActionName:
 		return push.New(workingDirectory, modulesProvider)
+
+	case pull.ActionName:
+		return pull.New(workingDirectory, modulesProvider)
 
 	default:
 		return nil // no matching found

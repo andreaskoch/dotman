@@ -96,6 +96,7 @@ These are the available commands:
 - **changes**: Show changed files.
 - **commit**: Commit all changes.
 - **push**: Push all commits to their remote repository.
+- **pull**: Pull changes from the remote repository.
 
 **Filter**
 
@@ -240,6 +241,16 @@ dotman push
 ```
 
 This will perform a `git push` on each module of your dotfile-repository and then on your dotfile-repository itself.
+
+### Pull changes from your remote repository
+
+For pulling changes for your dotfile-repository and all its sub-modules you can use the `pull` command.
+
+```bash
+dotman pull
+```
+
+The pull command will perform a `git submodule foreach git pull` on your dotfile-repository.
 
 ## Contribute
 
