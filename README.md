@@ -109,11 +109,11 @@ dotman help
 
 	Available commands are:
 	    clone     Clone a dotfile repository.
-	    list      Get a list of all modules in the current repository.
 	    import    Import files based on your current dotman configurations.
+	    list      Get a list of all modules in the current repository.
 	    backup    Backup your target files.
-	    deploy    Deploy your modules.
 	    changes   Show changed files.
+	    deploy    Deploy your modules.
 
 	Options:
 	    whatif    Enable the dry-run mode. Only print out what would happen.
@@ -132,14 +132,6 @@ dotman clone <repository-url>
 ```
 
 This command will execute a `git clone --recursive` for the supplied repository url.
-
-### Getting a list of all modules in your current dotfile-repository
-
-To get a list of all dotman-modules in the current directory use the `list` command.
-
-```bash
-dotman list
-```
 
 ### Creating a dotfile-repository with "import"
 
@@ -173,6 +165,14 @@ dotman import
 
 This will copy your ".vimrc", and the ".vim/autoload" and ".vim/bundle" folder into your new dotfile-repository - which gives you a good starting point for refining your personal dotfile repository.
 
+### Getting a list of all modules in your current dotfile-repository
+
+To get a list of all dotman-modules in the current directory use the `list` command.
+
+```bash
+dotman list
+```
+
 ### Backup your dotfiles
 
 To backup all files files that are mapped in your current dotfile-repository you can use the `backup` command.
@@ -182,6 +182,16 @@ dotman backup
 ```
 
 This command will create a *.tar archive in the ".backup" folder of your dotfile-repository which contains all mapped target files. This an easy way to backup your system configuration.
+
+### Showing changed files
+
+To see which files have changed between your dotfile-repository and the target you can use the `changes` command.
+
+```bash
+dotman changes
+```
+
+This command will print out a list of all files that have changed, grouped by module.
 
 ### Deploy your dotfile-repository
 
@@ -196,16 +206,6 @@ dotman deploy
 ```bash
 dotman -whatif deploy
 ```
-
-### Showing changed files
-
-To see which files have changed between your dotfile-repository and the target you can use the `changes` command.
-
-```bash
-dotman changes
-```
-
-This command will print out a list of all files that have changed, grouped by module.
 
 ## Contribute
 

@@ -24,11 +24,11 @@ func init() {
 	// initialize the list of available actions
 	availableActions = []ActionMetaData{
 		NewActionInfo(clone.ActionName, clone.ActionDescription),
-		NewActionInfo(list.ActionName, list.ActionDescription),
 		NewActionInfo(importer.ActionName, importer.ActionDescription),
+		NewActionInfo(list.ActionName, list.ActionDescription),
 		NewActionInfo(backup.ActionName, backup.ActionDescription),
-		NewActionInfo(deploy.ActionName, deploy.ActionDescription),
 		NewActionInfo(changes.ActionName, changes.ActionDescription),
+		NewActionInfo(deploy.ActionName, deploy.ActionDescription),
 	}
 }
 
