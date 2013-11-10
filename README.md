@@ -95,6 +95,7 @@ These are the available commands:
 - **deploy**: Deploy your modules.
 - **changes**: Show changed files.
 - **commit**: Commit all changes.
+- **push**: Push all commits to their remote repository.
 
 **Filter**
 
@@ -126,6 +127,7 @@ dotman help
 	    changes   Show changed files.
 	    deploy    Deploy your modules.
 	    commit    Commit all changes.
+	    push      Push all commits to their remote repository.
 
 	Options:
 	    whatif    Enable the dry-run mode. Only print out what would happen.
@@ -228,6 +230,16 @@ dotman commit "<your commit message>"
 ```
 
 This will perform a `git add -A .` followed by a `git commit -m "<your commit message>"` on each module of your dotfile-repository and then on your dotfile-repository itself.
+
+### Push all commits to their remote repository
+
+Use the `push` command to publish all commits to modules of your dotfile-repository and to your dotfile-repository itself to their respective remote repository.
+
+```bash
+dotman push
+```
+
+This will perform a `git push` on each module of your dotfile-repository and then on your dotfile-repository itself.
 
 ## Contribute
 
