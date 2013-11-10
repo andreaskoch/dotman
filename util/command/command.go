@@ -8,13 +8,12 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"strings"
 )
 
-func Execute(directory, commandText string) error {
+func Execute(directory, commandName string, arguments ...string) error {
 
 	// get the command
-	command := getCmd(directory, commandText)
+	command := getCmd(directory, commandName, arguments...)
 
 	// execute the command
 	if err := command.Start(); err != nil {
@@ -25,20 +24,9 @@ func Execute(directory, commandText string) error {
 	return command.Wait()
 }
 
-func getCmd(directory, commandText string) *exec.Cmd {
-	if commandText == "" {
+func getCmd(directory, commandName string, arguments ...string) *exec.Cmd {
+	if commandName == "" {
 		return nil
-	}
-
-	components := strings.Split(commandText, " ")
-
-	// get the command name
-	commandName := components[0]
-
-	// get the command arguments
-	arguments := make([]string, 0)
-	if len(components) > 1 {
-		arguments = components[1:]
 	}
 
 	// create the command

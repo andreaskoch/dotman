@@ -8,6 +8,7 @@ import (
 	"github.com/andreaskoch/dotman/actions/backup"
 	"github.com/andreaskoch/dotman/actions/changes"
 	"github.com/andreaskoch/dotman/actions/clone"
+	"github.com/andreaskoch/dotman/actions/commit"
 	"github.com/andreaskoch/dotman/actions/deploy"
 	"github.com/andreaskoch/dotman/actions/importer"
 	"github.com/andreaskoch/dotman/actions/list"
@@ -29,6 +30,7 @@ func init() {
 		NewActionInfo(backup.ActionName, backup.ActionDescription),
 		NewActionInfo(changes.ActionName, changes.ActionDescription),
 		NewActionInfo(deploy.ActionName, deploy.ActionDescription),
+		NewActionInfo(commit.ActionName, commit.ActionDescription),
 	}
 }
 
@@ -59,6 +61,9 @@ func Get(workingDirectory string, actionName string) Action {
 
 	case changes.ActionName:
 		return changes.New(modulesProvider)
+
+	case commit.ActionName:
+		return commit.New(workingDirectory, modulesProvider)
 
 	default:
 		return nil // no matching found

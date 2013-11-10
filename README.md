@@ -94,6 +94,7 @@ These are the available commands:
 - **backup**: Backup your target files.
 - **deploy**: Deploy your modules.
 - **changes**: Show changed files.
+- **commit**: Commit all changes.
 
 **Filter**
 
@@ -124,6 +125,7 @@ dotman help
 	    backup    Backup your target files.
 	    changes   Show changed files.
 	    deploy    Deploy your modules.
+	    commit    Commit all changes.
 
 	Options:
 	    whatif    Enable the dry-run mode. Only print out what would happen.
@@ -216,6 +218,16 @@ dotman deploy
 ```bash
 dotman -whatif deploy
 ```
+
+### Commit all changes to your dotfile-repository
+
+To commit all changes to your dotfile-repository you can use the `commit` command followed by a commit message.
+
+```bash
+dotman commit "<your commit message>"
+```
+
+This will perform a `git add -A .` followed by a `git commit -m "<your commit message>"` on each module of your dotfile-repository and then on your dotfile-repository itself.
 
 ## Contribute
 
