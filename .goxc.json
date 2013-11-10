@@ -15,7 +15,7 @@
 		},
 		"pkg-build": {
 			"metadata": {
-				"description": "dotman is a tool to bootstrap your system configuration files."
+				"description": "dotman is a tool to bootstrap your system configuration files.",
 				"maintainer": "Andreas Koch (https://github.com/andreaskoch)"
 			},
 			"metadata-deb": {
