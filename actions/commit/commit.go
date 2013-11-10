@@ -59,9 +59,6 @@ func (commit *Commit) execute(executeADryRunOnly bool, arguments []string) {
 		commitMessage = strings.Trim(commitMessage, `"'`)
 	}
 
-	// ui.Message("%s", len(commitMessage))
-	// ui.Fatal("%s", commitMessage)
-
 	// commit all submodules
 	modules := commit.moduleCollectionProvider()
 	for _, module := range modules.Collection {
