@@ -71,11 +71,11 @@ A **repository** is a collection of one or more modules. You can have only one m
 
 ## Usage
 
-	dotman [-whatif] dotman <command> [args]
+	dotman [-whatif] <command> [<filter>]
 
 **The -whatif flag**
 
-If you want to **test** what a certain command you can preceed it with the `-whatif` flag.
+If you want to **test** what a certain command you can precede it with the `-whatif` flag.
 This will ensure that no files are modified or copied.
 
 Example:
@@ -94,6 +94,16 @@ These are the available commands:
 - **backup**: Backup your target files.
 - **deploy**: Deploy your modules.
 - **changes**: Show changed files.
+
+**Filter**
+
+If you want to restrict the scope of the "import", "list", "changes" or "deploy" command to a specific module or a set of modules you can follow the command with a **module-filter**.
+
+```bash
+dotman import <filter>
+```
+
+The filter can be just the name of the module or a full-blown [(RE2 compliant) regular expression](https://code.google.com/p/re2/wiki/Syntax).
 
 ### Getting help
 
@@ -119,7 +129,7 @@ dotman help
 	    whatif    Enable the dry-run mode. Only print out what would happen.
 
 	Arguments:
-	    filter    You can add a module filter expression to all commands.
+	    filter    You can add a module filter expression to the import, list, changes and deploy commands.
 
 	Contribute: https://github.com/andreaskoch/dotman
 

@@ -26,7 +26,7 @@ var (
 
 	// module filter argument
 	moduleFilterExpressionName        = "filter"
-	moduleFilterExpressionDescription = "You can add a module filter expression to all commands."
+	moduleFilterExpressionDescription = "You can add a module filter expression to the import, list, changes and deploy commands."
 )
 
 func init() {
