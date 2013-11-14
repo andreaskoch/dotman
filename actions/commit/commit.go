@@ -5,7 +5,6 @@
 package commit
 
 import (
-	"fmt"
 	"github.com/andreaskoch/dotman/actions/base"
 	"github.com/andreaskoch/dotman/ui"
 	"github.com/andreaskoch/dotman/util/command"
@@ -99,7 +98,7 @@ func gitCommit(directory, message string) error {
 	}
 
 	// commit the changes
-	if err := command.Execute(directory, "git", "commit", fmt.Sprintf(`-m "%s"`, message)); err != nil {
+	if err := command.Execute(directory, "git", "commit","-m", message); err != nil {
 		return err
 	}
 
