@@ -4,7 +4,7 @@
 		"Include": "README.md,LICENSE",
 		"Exclude": "*.go"
 	},
-	"PackageVersion": "0.1.0",
+	"PackageVersion": "0.1.1",
 	"TaskSettings": {
 		"codesign": {
 			"id": "dotman"
@@ -24,6 +24,6 @@
 			}
 		}
 	},
-	"FormatVersion": "0.1",
+	"FormatVersion": "0.1.1",
 	"PrereleaseInfo": "dev"
 }

@@ -59,7 +59,7 @@ The file maps files and directories from your vim settings-repository directly i
 You can download the latest release of dotman from the github release page [github.com/andreaskoch/dotman/releases](https://github.com/andreaskoch/dotman/releases) ...
 
 ```bash
-curl -L https://github.com/andreaskoch/dotman/releases/download/v0.1.0/dotman_0.1.0-dev_linux_amd64.tar.gz | tar xz
+curl -L https://github.com/andreaskoch/dotman/releases/download/v0.1.1/dotman_0.1.1-dev_linux_amd64.tar.gz | tar xz
 ```
 
 ... or you can compile it yourself, if you have [go installed](http://golang.org/doc/install):
