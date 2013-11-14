@@ -57,7 +57,15 @@ func (pull *Pull) execute(executeADryRunOnly bool, arguments []string) {
 }
 
 func gitPull(directory string) error {
+	if err := command.Execute(directory, "git", "pull"); err != nil {
+		return err
+	}
+
 	if err := command.Execute(directory, "git", "submodule", "foreach", "git", "pull"); err != nil {
+		return err
+	}
+
+	if err := command.Execute(directory, "git", "submodule", "update", "--init"); err != nil {
 		return err
 	}
 
