@@ -50,21 +50,39 @@ func (pull *Pull) execute(executeADryRunOnly bool, arguments []string) {
 		return
 	}
 
-	// pull changes in sub-module
-	if err := gitPull(pull.baseDirectory); err != nil {
-		ui.Message("%s", err)
+	// pull changes in the main repository
+	if err := command.Execute(pull.baseDirectory, "git", "pull", "origin", "master"); err != nil {
+		ui.Fatal("Error while pull changes for the main repository:\n%s", err)
+	}
+
+	// pull changes for all modules
+	modules := pull.moduleCollectionProvider()
+	for _, module := range modules.Collection {
+		// pull changes in sub-module
+		if err := gitPull(module.Directory()); err != nil {
+			ui.Message("Error while updating module %s:\n%s", module, err)
+		}
 	}
 }
 
 func gitPull(directory string) error {
-	if err := command.Execute(directory, "git", "pull"); err != nil {
+
+	// discard changes
+	if err := command.Execute(directory, "git", "checkout", "."); err != nil {
 		return err
 	}
 
-	if err := command.Execute(directory, "git", "submodule", "foreach", "git", "pull"); err != nil {
+	// switch to master branch
+	if err := command.Execute(directory, "git", "checkout", "master"); err != nil {
 		return err
 	}
 
+	// pull changes
+	if err := command.Execute(directory, "git", "pull", "origin", "master"); err != nil {
+		return err
+	}
+
+	// update submodules
 	if err := command.Execute(directory, "git", "submodule", "update", "--init"); err != nil {
 		return err
 	}

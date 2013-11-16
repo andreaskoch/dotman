@@ -74,7 +74,7 @@ func (push *Push) execute(executeADryRunOnly bool, arguments []string) {
 }
 
 func gitPush(directory string) error {
-	if err := command.Execute(directory, "git", "push"); err != nil {
+	if err := command.Execute(directory, "git", "push", "origin", "master"); err != nil {
 		return err
 	}
 
