@@ -52,6 +52,24 @@ func showChanges(module *modules.Module) (changes chan string) {
 			source := instruction.Source()
 			target := instruction.Target()
 
+			// check if the target exists
+			if fs.PathExists(source) && !fs.PathExists(target) {
+				changes <- fmt.Sprintf("%s does not exists.", target)
+				continue
+			}
+
+			// check if the source exists
+			if fs.PathExists(target) && !fs.PathExists(source) {
+				changes <- fmt.Sprintf("%s does not exists.", source)
+				continue
+			}
+
+			// check source and target
+			if !fs.PathExists(source) && !fs.PathExists(target) {
+				changes <- fmt.Sprintf("%s and %s does not exists.", source, target)
+				continue
+			}
+
 			// compare directories
 			if fs.IsDirectory(source) {
 
@@ -66,7 +84,6 @@ func showChanges(module *modules.Module) (changes chan string) {
 					}
 				}
 
-				// check next instruction
 				continue
 			}
 
