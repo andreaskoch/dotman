@@ -64,6 +64,11 @@ func (backup *Backup) execute(executeADryRunOnly bool, arguments []string) {
 		for _, instruction := range module.Map.GetInstructions() {
 
 			targetPath := instruction.Target()
+
+			if !fs.PathExists(targetPath) {
+				continue // skip non-existent files
+			}
+
 			if !fs.IsDirectory(targetPath) {
 				files = append(files, targetPath)
 				continue
